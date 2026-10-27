@@ -30,6 +30,16 @@ npm run build && npm start
 - `/lab` — laboratório para afinar e aprovar cada gesto (fora do menu e do sitemap).
 - `docs/referencias/` — prints dos destaques e o vídeo da animação da casa (fora do deploy).
 
+## Conferência
+
+- `scripts/capturas.mjs` — capturas de uma página rolando (desktop ou celular) com o Chrome instalado.
+  No Git Bash: `MSYS_NO_PATHCONV=1 node scripts/capturas.mjs http://127.0.0.1:3120 .capturas / cel 8 0.9`.
+- `scripts/e2e-parede.mjs` — Parede de ponta a ponta (enviar → moderar → aprovar → grade → ficha → tirar),
+  contra o build local de produção: `npm run build && npm start -- --port 3121`, depois
+  `node scripts/e2e-parede.mjs http://127.0.0.1:3121`. Usa o armazenamento real e limpa tudo no fim
+  (`--so-limpar` apaga sobras). A senha da moderação vem do `.env.local`.
+- `docs/prompt-fable-refino-ui.md` — briefing do refinamento de UI/UX.
+
 ## Pendências da casa
 
 Arquivos da marca (logo, fontes, ilustrações), carta de bebidas, fotos reais, política pet, reservas,
