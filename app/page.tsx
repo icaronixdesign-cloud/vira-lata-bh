@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Horarios } from '@/components/Horarios';
 import { Letras } from '@/components/Letras';
+import { LataCena } from '@/components/LataCena';
 import { Prateleira } from '@/components/Prateleira';
 import { Selo } from '@/components/Selo';
 import { ParedeGaleria } from '@/components/ParedeGaleria';
@@ -99,8 +100,8 @@ export default async function Inicio() {
         </div>
       </section>
 
-      {/* 3. A lata (2D por enquanto; o modelo 3D da lata de sardinha entra aqui) */}
-      <section className="cartao c-creme pautado" aria-labelledby="lata-titulo">
+      {/* 3. A lata: a lata 3D chega fechada e o scroll a abre enquanto a seção fica parada (LataCena) */}
+      <section id="lata-sec" className="cartao c-creme pautado lata-sec" aria-labelledby="lata-titulo">
         <div className="miolo lata-grade">
           <div>
             <Letras como="h2" id="lata-titulo" className="t-estencil titulo" texto="Tudo cabe numa lata" gesto="rolar" farejar />
@@ -112,20 +113,28 @@ export default async function Inicio() {
               texto="Em Portugal, sardinha e atum viram lembrança de viagem em latas ilustradas. Em Minas, a carne de lata atravessa gerações. O Vira-lata junta as duas latas na mesma mesa de bar."
             />
           </div>
-          <div className="lata" data-abrir="">
-            <div className="lata-fundo" />
-            <div className="lata-dentro" />
-            <Letras className="lata-letras t-gigante" texto="Petiscos" gesto="sair" atraso={650} />
-            <div className="lata-tampa">
-              <Selo tamanho="clamp(120px, 18vw, 210px)" />
-              <span className="lata-anel" />
-            </div>
+          {/* Vaga 4:3 da lata 3D; o poster (mesma câmera) segura o lugar até o 3D carregar e fica sem WebGL */}
+          <div className="lata-vaga" data-vaga="secao">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/lata-3d/lata-fechada-800.webp"
+              srcSet="/lata-3d/lata-fechada-800.webp 800w, /lata-3d/lata-fechada.webp 1600w"
+              sizes="(max-width: 860px) 92vw, 600px"
+              alt="Lata de sardinha do Vira-lata, fechada, com o selo marrom na tampa"
+              width={1600}
+              height={1200}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </section>
+      {/* Curso de scroll em que a seção da lata fica parada e a lata abre */}
+      <div className="lata-respiro" aria-hidden="true" />
 
-      {/* 4. Prateleira das latas: o scroll vertical move as latas na horizontal */}
+      {/* 4. Prateleira das latas: o scroll vertical move as latas na horizontal; a lata 3D troca a cada cartão */}
       <Prateleira />
+      <LataCena />
 
       {/* 5. Petiscos e doces em cartões, como as capas dos stories */}
       {CARTOES.map((c) => {

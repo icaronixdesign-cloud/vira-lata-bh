@@ -1363,6 +1363,201 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   display: flex;
 }
 
+/* ==========================================================================
+   Lata 3D (LataCena): a vaga 4:3 marca onde a lata aparece; o poster (mesma câmera) segura o lugar
+   até o WebGL carregar. Na seção 3 a lata abre com o scroll; na prateleira ela fica sobre o cartão da vez.
+   ========================================================================== */
+.lata-sec {
+  display: grid;
+  align-content: center;
+}
+
+.lata-respiro {
+  height: 120svh;
+  pointer-events: none;
+}
+
+.lata-vaga {
+  position: relative;
+  width: min(100%, 600px);
+  aspect-ratio: 4 / 3;
+  margin-inline: auto;
+}
+
+.lata-vaga img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.45s ease;
+}
+
+html.lata-3d-pronta .lata-vaga img {
+  opacity: 0;
+}
+
+/* O canvas do WebGL: do tamanho da maior vaga com folga; mora dentro da seção que está na tela e só anda com transform */
+.lata-palco {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  will-change: transform;
+  contain: strict;
+}
+
+html.lata-3d-pronta .lata-palco {
+  opacity: 1;
+}
+
+/* Prateleira com a lata: cabeçalho e vaga na grade (a lata encosta na borda esquerda, o título vai à direita) */
+/* minmax(0, 1fr): a coluna do palco fica na largura da tela (o trilho max-content transborda à direita) */
+.prateleira-palco {
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(8px, 2svh, 24px);
+  padding-top: calc(var(--topo) + 8px);
+}
+
+/* O "Acompanha" fecha o trilho na altura dos cartões, para lata + cabeçalho + trilho caberem numa tela */
+.prateleira .prateleira-fecha {
+  width: min(92vw, 520px);
+}
+
+.prateleira .acompanha {
+  padding: clamp(18px, 2vw, 28px);
+}
+
+.prateleira .acompanha h3 {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.prateleira .acompanha > p {
+  font-size: 15px;
+}
+
+.prateleira .trios li {
+  padding: 10px 0;
+  font-size: clamp(15px, 1.3vw, 19px);
+}
+
+.prateleira .prateleira-fecha .acoes {
+  margin-top: 16px;
+}
+
+.prateleira-fundo {
+  top: 58%;
+}
+
+.prateleira-cabeca {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 56px;
+  padding-inline: var(--margem);
+  box-sizing: content-box;
+}
+
+.prateleira-cabeca .prateleira-abre {
+  order: 2;
+  width: auto;
+}
+
+.prateleira-cabeca .prateleira-abre .t-gigante {
+  font-size: clamp(72px, min(11vw, 17svh), 176px);
+}
+
+.prateleira .lata-vaga {
+  width: min(100%, 520px, calc(36svh * 4 / 3));
+  margin-inline: 0;
+  justify-self: start;
+}
+
+.prateleira-trilho {
+  scroll-padding-inline: var(--margem);
+}
+
+/* As três camadas que andam a cada quadro viram camadas do compositor: o transform não repinta o texto gigante */
+html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .prateleira-frente) {
+  will-change: transform;
+}
+
+/* Cartões menores para caber a lata em cima; o da vez (sob a lata) sobe um pouco */
+.rotulo {
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 4px;
+  width: clamp(250px, min(22vw, 34svh), 340px);
+  padding: clamp(14px, 1.4vw, 22px);
+  transition:
+    translate 0.5s var(--solta),
+    scale 0.5s var(--solta),
+    box-shadow 0.4s ease;
+}
+
+.rotulo[data-foco] {
+  translate: 0 -14px;
+  scale: 1.04;
+  box-shadow:
+    inset 0 0 0 2.5px rgb(75 38 43 / 0.55),
+    inset 0 -14px 24px -16px rgb(75 38 43 / 0.45),
+    0 30px 40px -22px rgb(75 38 43 / 0.75);
+}
+
+.rotulo-desenho {
+  width: clamp(52px, 4.4vw, 76px);
+  aspect-ratio: 3 / 2;
+}
+
+.rotulo-nome {
+  font-size: clamp(14px, 1.2vw, 19px);
+}
+
+.rotulo-preco {
+  font-size: clamp(15px, 1.3vw, 19px);
+}
+
+.rotulo-tag {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .lata-vaga,
+  .prateleira .lata-vaga {
+    width: min(100%, 440px);
+    margin-inline: auto;
+    justify-self: center;
+  }
+
+  .lata-respiro {
+    height: 90svh;
+  }
+
+  .prateleira-cabeca {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .prateleira-cabeca .prateleira-abre {
+    order: 0;
+  }
+
+  .rotulo {
+    width: min(78vw, 360px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lata-respiro {
+    height: 0;
+  }
+}
+
 /* Cardápio em cartões */
 .cardapio-cartao .t-gigante {
   font-size: clamp(96px, 20vw, 300px);

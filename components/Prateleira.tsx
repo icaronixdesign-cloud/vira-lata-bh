@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import type { CSSProperties, ReactElement } from 'react';
 import { ACOMPANHA, CARDAPIO, reais } from '@/content/cardapio';
 import { Letras } from './Letras';
+import { avisaTrilho, trilho as lata } from './lata3d/estados';
 
 // Cores dos rótulos, na ordem da prateleira (uma cor da marca por lata).
 const CORES = ['azul', 'creme', 'rosa', 'laranja', 'azul', 'rosa', 'creme'] as const;
@@ -56,13 +57,17 @@ const DESENHOS: ReactElement[] = [
 
 /**
  * Prateleira das latas: o scroll vertical move a prateleira na horizontal.
+ * Cabeçalho e a vaga da lata 3D ficam na grade do site; o trilho começa com o cartão 1 centrado sob a lata.
  * Sem JS ou com "reduzir movimento", vira uma faixa horizontal nativa com scroll-snap.
  * Com JS: container sticky, transform calculado do progresso do scroll (sem sequestrar a rolagem),
  * camadas em velocidades diferentes, inclinação pela velocidade e a chave de lata como progresso.
+ * A cada quadro publica `trilho.f` (qual cartão está sob a lata 3D) para a LataCena.
  */
 export function Prateleira() {
   const pista = useRef<HTMLElement>(null);
   const palco = useRef<HTMLDivElement>(null);
+  const cabeca = useRef<HTMLDivElement>(null);
+  const vaga = useRef<HTMLDivElement>(null);
   const trilho = useRef<HTMLDivElement>(null);
   const fundo = useRef<HTMLParagraphElement>(null);
   const frente = useRef<HTMLDivElement>(null);
@@ -70,13 +75,21 @@ export function Prateleira() {
   useEffect(() => {
     const elPista = pista.current;
     const elPalco = palco.current;
+    const elCabeca = cabeca.current;
+    const elVaga = vaga.current;
     const elTrilho = trilho.current;
     const elFundo = fundo.current;
     const elFrente = frente.current;
-    if (!elPista || !elPalco || !elTrilho || !elFundo || !elFrente) return;
+    if (!elPista || !elPalco || !elCabeca || !elVaga || !elTrilho || !elFundo || !elFrente) return;
+    const cartoes = [...elTrilho.querySelectorAll<HTMLElement>('.rotulo')];
+    const elRolinho = elPalco.querySelector<HTMLElement>('.chave-rolinho');
+    const elHaste = elPalco.querySelector<SVGElement>('.chave-haste');
+    let ultimoPp = '';
+    let ultimaInc = '';
 
     const reduz = matchMedia('(prefers-reduced-motion: reduce)');
     const mouse = matchMedia('(hover: hover) and (pointer: fine)');
+    const FATOR = 1.2; // px de scroll por px de trilho: curso para cada lata fechar, girar e abrir
     let imersiva = false;
     let extra = 0;
     let visivel = false;
@@ -84,6 +97,26 @@ export function Prateleira() {
     let alvo = 0;
     let atual = 0;
     let inclina = 0;
+    let centros: number[] = []; // centro de cada cartão no espaço do trilho (com a "lata da casa" um passo antes)
+    let foco0 = 0; // centro da vaga da lata no espaço do trilho, com o trilho parado no começo
+
+    // posição do foco no trilho → 0 (casa) … N (última lata)
+    const publicaF = (deslocamento: number) => {
+      const s = foco0 + deslocamento;
+      let f = cartoes.length;
+      if (s <= centros[0]) f = 0;
+      else {
+        for (let k = 0; k < cartoes.length; k++) {
+          if (s <= centros[k + 1]) {
+            f = k + (s - centros[k]) / (centros[k + 1] - centros[k]);
+            break;
+          }
+        }
+      }
+      lata.f = f;
+      lata.inclina = inclina;
+      avisaTrilho();
+    };
 
     const progresso = () => {
       const r = elPista.getBoundingClientRect();
@@ -95,8 +128,20 @@ export function Prateleira() {
       elTrilho.style.transform = `translate3d(${(-atual * extra).toFixed(1)}px, 0, 0)`;
       elFundo.style.transform = `translate3d(${(-atual * extra * 0.35).toFixed(1)}px, 0, 0)`;
       elFrente.style.transform = `translate3d(${(-atual * extra * 1.25).toFixed(1)}px, 0, 0)`;
-      elPalco.style.setProperty('--pp', atual.toFixed(4));
-      elPalco.style.setProperty('--inclina', `${inclina.toFixed(2)}deg`);
+      // Progresso e inclinação vão direto em quem usa (antes eram variáveis no palco: a cada quadro o navegador
+      // recalculava o estilo de todas as letras dos cartões, que herdam as variáveis). Só escreve quando muda.
+      const pp = atual.toFixed(4);
+      if (pp !== ultimoPp) {
+        ultimoPp = pp;
+        if (elRolinho) elRolinho.style.transform = `scaleX(${pp})`;
+        if (elHaste) elHaste.style.transform = `rotate(${(atual * 540).toFixed(1)}deg)`;
+      }
+      const inc = inclina.toFixed(2);
+      if (inc !== ultimaInc) {
+        ultimaInc = inc;
+        cartoes.forEach((c, i) => (c.style.rotate = `${(inclina + (i - 3) * 0.35).toFixed(2)}deg`));
+      }
+      publicaF(atual * extra);
     };
 
     const quadro = () => {
@@ -121,18 +166,51 @@ export function Prateleira() {
       if (!pedido) pedido = requestAnimationFrame(quadro);
     };
 
+    // Mede nos dois modos: o 1º cartão fica centrado sob a lata 3D (que encosta na borda esquerda da grade);
+    // no mouse, o "Acompanha" fecha alinhado à borda direita da grade e o curso sempre leva a última lata até a lata 3D.
     const mede = () => {
-      extra = Math.max(0, elTrilho.scrollWidth - elPalco.clientWidth);
-      elPista.style.height = `calc(100svh + ${Math.round(extra)}px)`;
-      acorda();
+      if (cartoes.length < 2) return;
+      elTrilho.style.transform = '';
+      elTrilho.style.paddingLeft = '';
+      elTrilho.style.paddingRight = '';
+      const rv = elVaga.getBoundingClientRect();
+      const r0 = cartoes[0].getBoundingClientRect();
+      const r1 = cartoes[1].getBoundingClientRect();
+      const passo = r1.left - r0.left;
+      const focoX = rv.left + rv.width / 2;
+      const pl = parseFloat(getComputedStyle(elTrilho).paddingLeft);
+      elTrilho.style.paddingLeft = `${Math.max(0, pl + focoX - (r0.left + r0.width / 2))}px`;
+      if (imersiva) {
+        const rp = elPalco.getBoundingClientRect();
+        const rc = elCabeca.getBoundingClientRect();
+        const gradeDir = rc.right - parseFloat(getComputedStyle(elCabeca).paddingRight);
+        elTrilho.style.paddingRight = `${Math.max(0, rp.right - gradeDir)}px`;
+        const rUlt = cartoes[cartoes.length - 1].getBoundingClientRect();
+        const ateUltima = rUlt.left + rUlt.width / 2 - focoX + passo * 0.3;
+        extra = Math.max(0, elTrilho.scrollWidth - elPalco.clientWidth, ateUltima);
+        elPista.style.height = `calc(100svh + ${Math.round(extra * FATOR)}px)`;
+      }
+      const rt = elTrilho.getBoundingClientRect();
+      const rol = imersiva ? 0 : elTrilho.scrollLeft;
+      centros = cartoes.map((c) => {
+        const r = c.getBoundingClientRect();
+        return r.left + r.width / 2 - rt.left + rol;
+      });
+      centros.unshift(centros[0] - (centros[1] - centros[0]));
+      foco0 = focoX - rt.left;
+      if (imersiva) {
+        atual = alvo = progresso();
+        aplica();
+        acorda();
+      } else {
+        publicaF(elTrilho.scrollLeft);
+      }
     };
 
     const liga = () => {
       imersiva = true;
       elPista.setAttribute('data-imersiva', '');
       mede();
-      atual = alvo = progresso();
-      aplica();
     };
     const desliga = () => {
       imersiva = false;
@@ -141,8 +219,15 @@ export function Prateleira() {
       elTrilho.style.transform = '';
       elFundo.style.transform = '';
       elFrente.style.transform = '';
+      cartoes.forEach((c) => (c.style.rotate = ''));
+      if (elRolinho) elRolinho.style.transform = '';
+      if (elHaste) elHaste.style.transform = '';
+      ultimoPp = ultimaInc = '';
       if (pedido) cancelAnimationFrame(pedido);
       pedido = 0;
+      mede();
+      elTrilho.scrollLeft = 0;
+      publicaF(0);
     };
 
     const olho = new IntersectionObserver((entradas) => {
@@ -153,25 +238,30 @@ export function Prateleira() {
     });
     olho.observe(elPista);
 
-    const medidor = new ResizeObserver(() => {
-      if (elPista.hasAttribute('data-imersiva')) mede();
-    });
+    const medidor = new ResizeObserver(() => mede());
 
     // No toque, fica a faixa horizontal nativa com scroll-snap: medida no celular (Chrome, CPU 4×),
     // ela rola mais fluida que a prateleira imersiva, e a rolagem vertical nunca é tocada.
+    // A lata 3D segue o dedo pelo scrollLeft da faixa.
     const decide = () => {
       if (reduz.matches || !mouse.matches) desliga();
       else liga();
     };
+    const aoArrastar = () => {
+      if (!imersiva) publicaF(elTrilho.scrollLeft);
+    };
     decide();
     medidor.observe(elTrilho);
     medidor.observe(elPalco);
+    medidor.observe(elVaga);
 
     addEventListener('scroll', acorda, { passive: true });
+    elTrilho.addEventListener('scroll', aoArrastar, { passive: true });
     reduz.addEventListener('change', decide);
     mouse.addEventListener('change', decide);
     return () => {
       removeEventListener('scroll', acorda);
+      elTrilho.removeEventListener('scroll', aoArrastar);
       reduz.removeEventListener('change', decide);
       mouse.removeEventListener('change', decide);
       olho.disconnect();
@@ -186,7 +276,7 @@ export function Prateleira() {
       <div ref={palco} className="prateleira-palco c-creme pautado">
         {/* A palavra-fantasma vem do CSS (content), para não existir nó de texto quase invisível. */}
         <p ref={fundo} className="prateleira-fundo t-gigante" aria-hidden="true" />
-        <div ref={trilho} className="prateleira-trilho">
+        <div ref={cabeca} className="prateleira-cabeca miolo">
           <header className="prateleira-abre">
             <Letras como="h2" id="prateleira-titulo" className="t-gigante carimbo" texto={latas.titulo} gesto="carimbar" />
             <Letras como="p" className="cardapio-intro" texto={latas.intro} gesto="pular" preguicoso />
@@ -195,6 +285,13 @@ export function Prateleira() {
               <span className="so-imersiva">Role para abrir a prateleira →</span>
             </p>
           </header>
+          {/* Vaga da lata 3D (LataCena). O poster da lata aberta segura o lugar até o 3D carregar. */}
+          <div ref={vaga} className="lata-vaga" data-vaga="prateleira">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/lata-3d/lata-aberta-800.webp" alt="" width={1600} height={1200} loading="lazy" decoding="async" />
+          </div>
+        </div>
+        <div ref={trilho} className="prateleira-trilho">
           <ul className="prateleira-latas">
             {latas.itens.map((item, i) => (
               <li key={item.nome} className={`rotulo c-${CORES[i % CORES.length]}`} style={{ '--i': i } as CSSProperties}>
