@@ -2,15 +2,21 @@
 
 import { useEffect } from 'react';
 import { semente, sinal, sorteador } from '@/lib/aleatorio';
+import { USA_R } from './Letras';
 
 const SELETOR = '[data-gesto]:not([data-in]), [data-loop], [data-abrir]:not([data-aberta]), .cartao';
 
-/** Textos longos: divide em letras ao chegar na tela e volta a ser texto corrido quando a última letra assenta. */
+const limpa = (palavra: string) => palavra.toLocaleLowerCase('pt-BR').replace(/[^\p{L}\p{N}]/gu, '');
+
+/** Textos preguiçosos: divide em letras ao chegar na tela (com marca-texto via data-destaques). */
 function divide(el: HTMLElement) {
   const v = el.querySelector<HTMLElement>(':scope > .v');
   if (!v || el.dataset.dividido !== undefined) return;
   el.dataset.dividido = '';
+  delete el.dataset.junto;
   const texto = v.textContent ?? '';
+  const comR = USA_R.has(el.dataset.gesto ?? '');
+  const marcadas = new Set((el.dataset.destaques ?? '').split(',').map(limpa).filter(Boolean));
   const sortear = sorteador(semente(texto));
   const frag = document.createDocumentFragment();
   let n = 0;
@@ -21,13 +27,13 @@ function divide(el: HTMLElement) {
       continue;
     }
     const w = document.createElement('span');
-    w.className = 'w';
+    w.className = marcadas.has(limpa(parte)) ? 'w k' : 'w';
     for (const ch of parte) {
       const l = document.createElement('span');
       l.className = 'l';
       l.textContent = ch;
       l.style.setProperty('--i', String(n++));
-      l.style.setProperty('--r', sinal(sortear));
+      if (comR) l.style.setProperty('--r', sinal(sortear));
       w.append(l);
     }
     frag.append(w);
@@ -38,24 +44,40 @@ function divide(el: HTMLElement) {
   v.replaceChildren(frag);
   v.setAttribute('aria-hidden', 'true');
   el.prepend(sr);
+}
 
-  let restantes = n;
-  const junta = () => {
-    if (!el.isConnected || el.dataset.junto !== undefined) return;
-    el.dataset.junto = '';
+/** Devolve o texto corrido palavra a palavra (o marca-texto .k sobrevive), derrubando os nós por letra. */
+function junta(el: HTMLElement) {
+  if (!el.isConnected || el.dataset.junto !== undefined) return;
+  const v = el.querySelector<HTMLElement>(':scope > .v');
+  if (!v) return;
+  el.dataset.junto = '';
+  delete el.dataset.dividido; // o laboratório pode dividir de novo
+  for (const w of v.querySelectorAll<HTMLElement>('.w')) w.replaceChildren(w.textContent ?? '');
+  v.removeAttribute('aria-hidden');
+  el.querySelector(':scope > .sr')?.remove();
+}
+
+/** Junta quando a última letra assenta (ou num prazo de segurança). `abanar` e `farejar` ficam divididos. */
+function agendaJunta(el: HTMLElement) {
+  if (el.dataset.junto !== undefined || el.hasAttribute('data-farejar') || el.closest('.abanar')) return;
+  const letras = el.querySelectorAll('.l').length;
+  if (!letras) return;
+  let restantes = letras;
+  const fim = () => {
     el.removeEventListener('animationend', aoFim);
-    v.textContent = texto;
-    v.removeAttribute('aria-hidden');
-    sr.remove();
+    window.clearTimeout(prazo);
+    junta(el);
   };
   const aoFim = (e: AnimationEvent) => {
-    if ((e.target as HTMLElement).classList.contains('l') && --restantes <= 0) junta();
+    if ((e.target as HTMLElement).classList.contains('l') && --restantes <= 0) fim();
   };
   el.addEventListener('animationend', aoFim);
   const estilo = getComputedStyle(el);
   const passo = parseFloat(estilo.getPropertyValue('--passo')) || 20;
   const d0 = parseFloat(estilo.getPropertyValue('--d0')) || 0;
-  window.setTimeout(junta, d0 + n * passo + 2400);
+  const dur = parseFloat(estilo.getPropertyValue('--dur')) || 900;
+  const prazo = window.setTimeout(fim, d0 + letras * passo + dur + 1800);
 }
 
 type Centro = { x: number; y: number };
@@ -69,15 +91,38 @@ export function Interacoes() {
 
     const entra = new IntersectionObserver(
       (entradas) => {
+        const chegaram: HTMLElement[] = [];
         for (const e of entradas) {
           if (!e.isIntersecting) continue;
           const el = e.target as HTMLElement;
           entra.unobserve(el);
           if (el.hasAttribute('data-lazy') && !reduz.matches) divide(el);
           el.setAttribute('data-in', '');
+          chegaram.push(el);
         }
+        if (!chegaram.length) return;
+        // As letras de "sair" só animam quando a lata abre; as outras marcam hora de juntar
+        // no quadro seguinte, para as leituras de estilo não se misturarem com as escritas acima.
+        requestAnimationFrame(() => {
+          for (const el of chegaram) if (el.dataset.gesto !== 'sair') agendaJunta(el);
+        });
       },
       { rootMargin: '0px 0px -6% 0px' },
+    );
+
+    // Pré-divide os textos preguiçosos bem antes de entrarem na tela, só em momento de fato ocioso
+    // (sem prazo: num scroll contínuo nada roda aqui e a divisão fica para a entrada, como sempre).
+    const temOcioso = 'requestIdleCallback' in window;
+    const prepara = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (!e.isIntersecting) continue;
+          const el = e.target as HTMLElement;
+          prepara.unobserve(el);
+          if (!reduz.matches && temOcioso) requestIdleCallback(() => divide(el));
+        }
+      },
+      { rootMargin: '1000px 0px 1000px 0px' },
     );
 
     const loops = new IntersectionObserver((entradas) => {
@@ -88,8 +133,10 @@ export function Interacoes() {
       (entradas) => {
         for (const e of entradas) {
           if (!e.isIntersecting) continue;
-          (e.target as HTMLElement).setAttribute('data-aberta', '');
-          abre.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          el.setAttribute('data-aberta', '');
+          el.querySelectorAll<HTMLElement>('[data-gesto="sair"]').forEach(agendaJunta);
+          abre.unobserve(el);
         }
       },
       { threshold: 0.5 },
@@ -106,6 +153,7 @@ export function Interacoes() {
 
     const um = (el: HTMLElement) => {
       if (el.matches('[data-gesto]:not([data-in])')) entra.observe(el);
+      if (el.matches('[data-lazy]:not([data-in])')) prepara.observe(el);
       if (el.matches('[data-loop]')) loops.observe(el);
       if (el.matches('[data-abrir]:not([data-aberta])')) abre.observe(el);
       if (el.matches('.cartao')) alturas.observe(el);
@@ -119,6 +167,34 @@ export function Interacoes() {
       for (const m of mudancas) m.addedNodes.forEach((n) => n instanceof HTMLElement && registra(n));
     });
     mudou.observe(document.body, { childList: true, subtree: true });
+
+    // "De novo" (laboratório): junta, divide de novo e repete os gestos do caso.
+    const deNovo = (e: Event) => {
+      const caso = e.target as HTMLElement;
+      const gestos = caso.querySelectorAll<HTMLElement>('[data-gesto]');
+      const latas = caso.querySelectorAll<HTMLElement>('[data-abrir]');
+      gestos.forEach((el) => {
+        el.removeAttribute('data-in');
+        if (!reduz.matches) {
+          junta(el);
+          divide(el);
+        }
+      });
+      latas.forEach((el) => el.removeAttribute('data-aberta'));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          gestos.forEach((el) => {
+            el.setAttribute('data-in', '');
+            if (el.dataset.gesto !== 'sair') agendaJunta(el);
+          });
+          latas.forEach((el) => {
+            el.setAttribute('data-aberta', '');
+            el.querySelectorAll<HTMLElement>('[data-gesto="sair"]').forEach(agendaJunta);
+          });
+        }),
+      );
+    };
+    document.addEventListener('letras:denovo', deNovo);
 
     // Olhos que seguem o cursor e letras que se afastam dele: só com mouse e sem "reduzir movimento".
     let px = -9999;
@@ -188,10 +264,12 @@ export function Interacoes() {
 
     return () => {
       entra.disconnect();
+      prepara.disconnect();
       loops.disconnect();
       abre.disconnect();
       alturas.disconnect();
       mudou.disconnect();
+      document.removeEventListener('letras:denovo', deNovo);
       window.removeEventListener('pointermove', aoMover);
       window.removeEventListener('resize', aoRedimensionar);
       if (pedido) cancelAnimationFrame(pedido);

@@ -10,10 +10,11 @@ import './globals.css';
 
 // Fontes provisórias até os arquivos da marca: estêncil (títulos), slab (itens), máquina de escrever (detalhes)
 // e uma condensada pesada para as palavras gigantes carimbadas.
-const estencil = Stardos_Stencil({ subsets: ['latin'], weight: ['400', '700'], variable: '--f-estencil', display: 'swap' });
+// Preload só do que aparece na primeira dobra (estêncil, slab e máquina); o site só usa a estêncil em 700.
+const estencil = Stardos_Stencil({ subsets: ['latin'], weight: '700', variable: '--f-estencil', display: 'swap' });
 const slab = Roboto_Slab({ subsets: ['latin'], variable: '--f-slab', display: 'swap' });
 const maquina = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--f-maquina', display: 'swap' });
-const carimbo = Anton({ subsets: ['latin'], weight: '400', variable: '--f-carimbo', display: 'swap' });
+const carimbo = Anton({ subsets: ['latin'], weight: '400', variable: '--f-carimbo', display: 'swap', preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),

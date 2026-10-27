@@ -184,9 +184,8 @@ export function Prateleira() {
   return (
     <section ref={pista} className="prateleira" aria-labelledby="prateleira-titulo">
       <div ref={palco} className="prateleira-palco c-creme pautado">
-        <p ref={fundo} className="prateleira-fundo t-gigante" aria-hidden="true">
-          Latas Latas Latas
-        </p>
+        {/* A palavra-fantasma vem do CSS (content), para não existir nó de texto quase invisível. */}
+        <p ref={fundo} className="prateleira-fundo t-gigante" aria-hidden="true" />
         <div ref={trilho} className="prateleira-trilho">
           <header className="prateleira-abre">
             <Letras como="h2" id="prateleira-titulo" className="t-gigante carimbo" texto={latas.titulo} gesto="carimbar" />

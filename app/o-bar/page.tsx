@@ -52,6 +52,7 @@ export default function OBar() {
                     gesto="pular"
                     atraso={(linha++ % 5) * 120}
                     passo={14}
+                    preguicoso
                     destaques={['adota', 'latas', 'lata', 'conserva', 'Brasil', 'Portugal', 'chope', 'vira-lata']}
                   />
                 ))}

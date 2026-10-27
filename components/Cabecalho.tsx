@@ -11,7 +11,7 @@ export function Cabecalho() {
   const caminho = usePathname();
   return (
     <header className="cabecalho">
-      <Link href="/" className="marca abanar" aria-label="Vira-lata, página inicial">
+      <Link href="/" className="marca abanar">
         <Selo tamanho="44px" girar />
         <Letras texto="Vira-lata" gesto="rolar" className="marca-nome" />
       </Link>

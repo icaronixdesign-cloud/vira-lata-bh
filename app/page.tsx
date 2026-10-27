@@ -89,6 +89,7 @@ export default async function Inicio() {
                 gesto="pular"
                 atraso={k * 140}
                 passo={16}
+                preguicoso
                 destaques={['adota', 'latas', 'Brasil', 'Portugal', 'chope']}
               />
             ))}

@@ -3,6 +3,9 @@ import { semente, sinal, sorteador } from '@/lib/aleatorio';
 
 export type Gesto = 'rolar' | 'pular' | 'carimbar' | 'datilografar' | 'sacudir' | 'sair';
 
+/** Gestos que usam o sorteio --r (giro/desvio por letra); os outros dispensam o estilo extra. */
+export const USA_R: ReadonlySet<string> = new Set(['carimbar', 'datilografar', 'sacudir', 'sair']);
+
 type Props = {
   texto: string;
   gesto: Gesto;
@@ -30,6 +33,8 @@ const limpa = (palavra: string) => palavra.toLocaleLowerCase('pt-BR').replace(/[
  * Cada letra de cada palavra entra com um gesto do universo da casa.
  * As letras ficam `aria-hidden`; a frase inteira vai num texto oculto para leitor de tela e buscadores.
  * As palavras nunca quebram no meio. Sem JS, o texto aparece parado e legível.
+ * Quando a última letra assenta, o texto volta a ser corrido (menos nós vivos no DOM);
+ * só `abanar` e `farejar` continuam divididos, porque precisam das letras no hover.
  */
 export function Letras({
   texto,
@@ -52,12 +57,20 @@ export function Letras({
 
   if (preguicoso) {
     return (
-      <Tag className={classes} data-gesto={gesto} data-lazy="" style={estilo} id={id}>
+      <Tag
+        className={classes}
+        data-gesto={gesto}
+        data-lazy=""
+        data-destaques={destaques?.length ? destaques.join(',') : undefined}
+        style={estilo}
+        id={id}
+      >
         <span className="v">{texto}</span>
       </Tag>
     );
   }
 
+  const comR = USA_R.has(gesto);
   const sortear = sorteador(semente(texto));
   const marcadas = new Set((destaques ?? []).map(limpa));
   let n = 0;
@@ -74,8 +87,10 @@ export function Letras({
             <span className={marcadas.has(limpa(parte)) ? 'w k' : 'w'} key={k}>
               {Array.from(parte).map((ch) => {
                 const i = n++;
+                const vars: Record<string, string | number> = { '--i': i };
+                if (comR) vars['--r'] = sinal(sortear);
                 return (
-                  <span className="l" key={i} style={{ '--i': i, '--r': sinal(sortear) } as CSSProperties}>
+                  <span className="l" key={i} style={vars as CSSProperties}>
                     {ch}
                   </span>
                 );
