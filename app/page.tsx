@@ -218,7 +218,7 @@ export default async function Inicio() {
         <div className="miolo">
           <Letras como="h2" id="visite-titulo" className="t-estencil titulo" texto="Vem pro bar" gesto="rolar" farejar />
           <div className="visite-grade" style={{ marginTop: 32 }}>
-            <div className="painel c-creme pautado">
+            <div className="painel c-creme">
               <Letras como="h3" className="t-estencil titulo" texto="Horários" gesto="rolar" />
               <Horarios />
             </div>

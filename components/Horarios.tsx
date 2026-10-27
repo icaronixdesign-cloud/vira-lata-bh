@@ -10,7 +10,7 @@ export function Horarios({ className }: { className?: string }) {
   const [hoje, setHoje] = useState<number | null>(null);
   useEffect(() => setHoje(agoraEmBH().dia), []);
   return (
-    <ul className={['horarios', className].filter(Boolean).join(' ')}>
+    <ul className={['horarios', 'pautado', className].filter(Boolean).join(' ')}>
       {LINHAS_HORARIO.map((linha, k) => (
         <li key={linha.dias} data-hoje={hoje !== null && (linha.indices as readonly number[]).includes(hoje) ? '' : undefined}>
           <Letras texto={linha.dias} gesto="rolar" className="t-estencil" atraso={k * 120} />

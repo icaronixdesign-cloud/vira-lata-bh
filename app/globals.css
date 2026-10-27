@@ -188,24 +188,46 @@ button {
   );
 }
 
+/* Cada cor guarda o próprio fundo (--fundo) para os blocos de texto apagarem a pauta atrás de si.
+   No azul e no laranja, a tinta desce para o marrom escuro: contraste AA para texto de qualquer tamanho. */
 .c-azul {
   background-color: var(--azul);
-  --linha: rgb(110 63 69 / 0.3);
+  --fundo: var(--azul);
+  --linha: rgb(75 38 43 / 0.3);
+  color: var(--marrom-escuro);
 }
 
 .c-laranja {
   background-color: var(--laranja);
-  --linha: rgb(110 63 69 / 0.3);
+  --fundo: var(--laranja);
+  --linha: rgb(75 38 43 / 0.3);
   --marca: var(--creme);
+  color: var(--marrom-escuro);
 }
 
 .c-rosa {
   background-color: var(--rosa);
+  --fundo: var(--rosa);
   --linha: rgb(110 63 69 / 0.28);
 }
 
 .c-creme {
   background-color: var(--creme);
+  --fundo: var(--creme);
+}
+
+/* As palavras carimbadas continuam no marrom da marca: gigantes, passam no AA de texto grande. */
+.c-azul .t-gigante,
+.c-laranja .t-gigante {
+  color: var(--marrom);
+}
+
+/* Texto corrido e texto pequeno nunca ficam sobre uma linha da pauta:
+   o bloco apaga a pauta atrás de si com o fundo da própria seção. */
+.pautado :is(.texto, .cardapio-intro, .abertura-sub, .fds-pais, .manifesto-assina, .titulo, .parede-sub, .destaques, .perguntas, .release, .fatos, .nota, .parede-nota, .envio-grade, .envio-aviso, .rodape-grade, .rodape-base, .quadro-nome, .endereco address, .menu .link, .lab-caso header, .capa p) {
+  background-color: var(--fundo, var(--creme));
+  box-shadow: 0 0 0 12px var(--fundo, var(--creme));
+  border-radius: 1px;
 }
 
 /* ==========================================================================
@@ -640,7 +662,7 @@ button {
   min-height: 44px;
   padding: 0 18px;
   border-radius: 999px;
-  font: 700 14px/1 var(--f-maquina), monospace;
+  font: 700 15px/1 var(--f-maquina), monospace;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -859,7 +881,7 @@ button {
   padding: 6px 12px;
   border-radius: 999px;
   background: rgb(245 233 209 / 0.85);
-  font: 700 12px/1.2 var(--f-maquina), monospace;
+  font: 700 13px/1.2 var(--f-maquina), monospace;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -887,10 +909,20 @@ button {
 }
 
 .texto {
-  max-width: 40ch;
+  max-width: 52ch;
   font-size: clamp(19px, 1.7vw, 23px);
   font-weight: 600;
   line-height: 1.5;
+}
+
+/* Títulos nunca deixam uma palavra sozinha na última linha. */
+.titulo,
+.pergunta,
+.abertura h1,
+.parede-sub,
+.cardapio-intro,
+.abertura-sub {
+  text-wrap: balance;
 }
 
 /* Abertura */
@@ -1169,7 +1201,7 @@ button {
 
 .citacao footer {
   margin-top: 16px;
-  font: 400 16px/1.4 var(--f-maquina), monospace;
+  font: 400 17px/1.4 var(--f-maquina), monospace;
 }
 
 @media (max-width: 860px) {
@@ -1193,18 +1225,28 @@ button {
   box-shadow: var(--sombra);
 }
 
+/* As linhas de horário assentam na pauta: cada linha ocupa uma pauta inteira e a régua do papel
+   faz o papel de divisória (a pauta fica na própria lista, deslocada até a base das letras). */
 .horarios {
   margin-top: 24px;
+  background-position: 0 -11px;
 }
 
 .horarios li {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: baseline;
   gap: 8px 24px;
-  padding: 12px 0;
-  border-bottom: 1.5px solid var(--linha);
-  font-size: clamp(24px, 3vw, 40px);
+  font-size: clamp(22px, 2.2vw, 31px);
+  line-height: var(--pauta);
+  min-height: var(--pauta);
+}
+
+@media (max-width: 720px) {
+  .horarios {
+    background-position: 0 -9px;
+  }
 }
 
 .horarios li[data-hoje] {
@@ -1214,8 +1256,8 @@ button {
 .horarios li[data-hoje]::before {
   content: 'hoje';
   position: absolute;
-  left: -8px;
-  top: -6px;
+  left: -10px;
+  top: 0;
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--marrom);
@@ -1294,7 +1336,7 @@ button {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: var(--sombra);
-  font: 700 15px/1 var(--f-estencil), serif;
+  font: 700 16px/1 var(--f-estencil), serif;
   text-transform: uppercase;
   text-decoration: none;
 }
@@ -1355,7 +1397,7 @@ button {
 .item-nota {
   grid-column: 1 / -1;
   max-width: 56ch;
-  font: 400 17px/1.5 var(--f-maquina), monospace;
+  font: 400 18px/1.5 var(--f-maquina), monospace;
 }
 
 .acompanha {
@@ -1421,7 +1463,7 @@ button {
 
 .rodape-cardapio {
   padding: 40px var(--margem) 120px;
-  font: 400 16px/1.6 var(--f-maquina), monospace;
+  font: 400 17px/1.6 var(--f-maquina), monospace;
 }
 
 /* ==========================================================================
@@ -1456,7 +1498,7 @@ button {
 .rodape address,
 .rodape ul,
 .rodape p {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.6;
 }
 
@@ -1468,7 +1510,7 @@ button {
   margin-top: 64px;
   padding-top: 24px;
   border-top: 1.5px solid var(--linha);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .rodape-base a {
@@ -1604,7 +1646,7 @@ button {
 
 .nota {
   margin-top: 24px;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .materia {
@@ -1668,7 +1710,7 @@ button {
 .parede-nota {
   padding: 0 var(--margem) 64px;
   text-align: center;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 /* O giro de cada quadro vem do <li> (--rot); fora da grade, fica reto. */
@@ -1855,7 +1897,7 @@ button {
   border-radius: 999px;
   background: var(--marrom);
   color: var(--creme);
-  font-size: 13px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
@@ -1883,7 +1925,7 @@ button {
   padding: 12px 16px;
   border-radius: 12px;
   background: var(--rosa);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -1921,7 +1963,7 @@ button {
 }
 
 .foto-alvo .t-maquina {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .campo {
@@ -1958,7 +2000,7 @@ button {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  font: 400 16px/1.5 var(--f-maquina), monospace;
+  font: 400 17px/1.5 var(--f-maquina), monospace;
 }
 
 .aceite input {
@@ -2067,7 +2109,7 @@ button {
 
 .mod-meta {
   margin-top: 8px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .mod-acoes {

@@ -51,7 +51,7 @@ export default function Visite() {
               </a>
             </div>
           </div>
-          <div className="painel c-creme pautado">
+          <div className="painel c-creme">
             <Letras como="h2" className="t-estencil titulo" texto="Horários" gesto="rolar" />
             <Horarios />
           </div>
