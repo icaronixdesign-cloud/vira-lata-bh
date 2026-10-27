@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { semente, sinal, sorteador } from '@/lib/aleatorio';
 import { USA_R } from './Letras';
 
-const SELETOR = '[data-gesto]:not([data-in]), [data-loop], [data-abrir]:not([data-aberta]), .cartao';
+const SELETOR = '[data-gesto], [data-loop], [data-abrir]:not([data-aberta]), .cartao';
 
 const limpa = (palavra: string) => palavra.toLocaleLowerCase('pt-BR').replace(/[^\p{L}\p{N}]/gu, '');
 
@@ -153,6 +153,8 @@ export function Interacoes() {
 
     const um = (el: HTMLElement) => {
       if (el.matches('[data-gesto]:not([data-in])')) entra.observe(el);
+      // Marcados antes da hidratação (primeira dobra): só falta marcar a hora de juntar.
+      if (el.matches('[data-gesto][data-in]:not([data-junto])') && el.dataset.gesto !== 'sair') agendaJunta(el);
       if (el.matches('[data-lazy]:not([data-in])')) prepara.observe(el);
       if (el.matches('[data-loop]')) loops.observe(el);
       if (el.matches('[data-abrir]:not([data-aberta])')) abre.observe(el);

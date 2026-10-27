@@ -14,7 +14,7 @@ export default function Cardapio() {
     <>
       <header className="topo-pagina c-laranja pautado">
         <div className="miolo">
-          <Letras como="h1" className="t-gigante carimbo" texto="Cardápio" gesto="carimbar" passo={70} />
+          <Letras como="h1" className="t-gigante carimbo" texto="Cardápio" gesto="carimbar" passo={45} />
           <Letras
             como="p"
             className="cardapio-intro"

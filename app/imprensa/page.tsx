@@ -52,7 +52,7 @@ export default function Imprensa() {
     <>
       <header className="topo-pagina c-creme pautado">
         <div className="miolo">
-          <Letras como="h1" className="t-gigante carimbo" texto="Imprensa" gesto="carimbar" passo={70} />
+          <Letras como="h1" className="t-gigante carimbo" texto="Imprensa" gesto="carimbar" passo={45} />
           <Letras como="p" className="cardapio-intro" texto="Tudo o que você precisa para escrever sobre o Vira-lata." gesto="pular" atraso={600} passo={14} />
         </div>
       </header>

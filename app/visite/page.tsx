@@ -23,7 +23,7 @@ export default function Visite() {
     <>
       <header className="topo-pagina c-azul pautado">
         <div className="miolo">
-          <Letras como="h1" className="t-gigante carimbo" texto="Visite" gesto="carimbar" passo={90} />
+          <Letras como="h1" className="t-gigante carimbo" texto="Visite" gesto="carimbar" passo={60} />
           <div className="acoes">
             <StatusChip />
           </div>

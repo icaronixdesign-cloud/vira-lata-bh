@@ -50,7 +50,7 @@ export default async function Inicio() {
               className="t-estencil"
               texto={SITE.chamada}
               gesto="pular"
-              atraso={500}
+              atraso={250}
               passo={34}
               farejar
             />
@@ -59,15 +59,15 @@ export default async function Inicio() {
               className="abertura-sub"
               texto="Latas, petiscos e chope gelado da chef Bruna Martins em Lourdes, Beagá."
               gesto="pular"
-              atraso={1700}
+              atraso={1100}
               passo={12}
             />
             <div className="acoes">
               <Link href="/cardapio" className="botao abanar">
-                <Letras texto="Ver cardápio" gesto="rolar" atraso={2300} />
+                <Letras texto="Ver cardápio" gesto="rolar" atraso={1600} />
               </Link>
               <Link href="/visite" className="botao claro abanar">
-                <Letras texto="Como chegar" gesto="rolar" atraso={2500} />
+                <Letras texto="Como chegar" gesto="rolar" atraso={1750} />
               </Link>
             </div>
             {MODO === 'pitch' ? <p className="conceito-tag">Projeto conceito · não oficial</p> : null}

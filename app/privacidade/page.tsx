@@ -35,7 +35,7 @@ export default function Privacidade() {
   return (
     <section className="topo-pagina c-creme pautado">
       <div className="miolo">
-        <Letras como="h1" className="t-gigante carimbo" texto="Privacidade" gesto="carimbar" passo={60} />
+        <Letras como="h1" className="t-gigante carimbo" texto="Privacidade" gesto="carimbar" passo={45} />
         <ul className="perguntas">
           {TOPICOS.map((topico) => (
             <li key={topico.t}>

@@ -10,11 +10,12 @@ import './globals.css';
 
 // Fontes provisórias até os arquivos da marca: estêncil (títulos), slab (itens), máquina de escrever (detalhes)
 // e uma condensada pesada para as palavras gigantes carimbadas.
-// Preload só do que aparece na primeira dobra (estêncil, slab e máquina); o site só usa a estêncil em 700.
+// O site só usa a estêncil em 700 (o peso 400 saiu do pacote). A Anton fica no preload porque é o
+// LCP das páginas internas (a palavra gigante do topo); sem ela o /cardapio perde ~10 pontos de LCP.
 const estencil = Stardos_Stencil({ subsets: ['latin'], weight: '700', variable: '--f-estencil', display: 'swap' });
 const slab = Roboto_Slab({ subsets: ['latin'], variable: '--f-slab', display: 'swap' });
 const maquina = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--f-maquina', display: 'swap' });
-const carimbo = Anton({ subsets: ['latin'], weight: '400', variable: '--f-carimbo', display: 'swap', preload: false });
+const carimbo = Anton({ subsets: ['latin'], weight: '400', variable: '--f-carimbo', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -82,6 +83,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Rodape />
         <BarraInferior />
         <Interacoes />
+        {/* As letras da primeira dobra entram já no primeiro paint, sem esperar a hidratação:
+            a animação é CSS puro, só precisa do data-in (o LCP das páginas internas agradece). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "requestAnimationFrame(()=>{for(const el of document.querySelectorAll('[data-gesto]:not([data-lazy]):not([data-in])')){const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)el.setAttribute('data-in','')}})",
+          }}
+        />
       </body>
     </html>
   );

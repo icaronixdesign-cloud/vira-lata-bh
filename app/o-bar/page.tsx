@@ -26,7 +26,7 @@ export default function OBar() {
     <>
       <header className="topo-pagina c-laranja pautado">
         <div className="miolo">
-          <Letras como="h1" className="t-gigante carimbo" texto="O bar" gesto="carimbar" passo={110} />
+          <Letras como="h1" className="t-gigante carimbo" texto="O bar" gesto="carimbar" passo={70} />
           <Letras
             como="p"
             className="cardapio-intro"
