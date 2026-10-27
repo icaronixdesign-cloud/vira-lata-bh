@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Horarios } from '@/components/Horarios';
 import { Letras } from '@/components/Letras';
+import { Prateleira } from '@/components/Prateleira';
 import { Selo } from '@/components/Selo';
 import { ParedeGaleria } from '@/components/ParedeGaleria';
 import { CARDAPIO, FIM_DE_SEMANA, destaques, reais } from '@/content/cardapio';
@@ -23,11 +24,6 @@ const MANIFESTO = [
 ];
 
 const CARTOES = [
-  {
-    id: 'latas' as const,
-    cor: 'c-creme',
-    escolhidos: ['Sardinha c/ molho de tomate e pimentão', 'Polvo confit c/ vinagrete', 'Carne de lata c/ alho e cebola caramelizados'],
-  },
   {
     id: 'petiscos' as const,
     cor: 'c-laranja',
@@ -126,7 +122,10 @@ export default async function Inicio() {
         </div>
       </section>
 
-      {/* 4. O cardápio em três cartões, como as capas dos stories */}
+      {/* 4. Prateleira das latas: o scroll vertical move as latas na horizontal */}
+      <Prateleira />
+
+      {/* 5. Petiscos e doces em cartões, como as capas dos stories */}
       {CARTOES.map((c) => {
         const categoria = CARDAPIO.find((x) => x.id === c.id)!;
         return (
@@ -144,7 +143,7 @@ export default async function Inicio() {
               </ul>
               <div className="acoes">
                 <Link href={`/cardapio#${c.id}`} className="botao abanar">
-                  <Letras texto={`Ver ${c.id === 'latas' ? 'as' : 'os'} ${categoria.itens.length} ${categoria.titulo.toLowerCase()}`} gesto="rolar" />
+                  <Letras texto={`Ver os ${categoria.itens.length} ${categoria.titulo.toLowerCase()}`} gesto="rolar" />
                 </Link>
               </div>
             </div>
