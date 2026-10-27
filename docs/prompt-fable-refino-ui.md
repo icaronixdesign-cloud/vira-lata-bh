@@ -69,7 +69,7 @@ Meça antes de mexer e depois de cada mudança importante. Pontos suspeitos:
 Regras: anime só `transform` e `opacity`; nada de `will-change` permanente; loops pausados fora da tela.
 
 **Metas:**
-- Lighthouse celular ≥ 90 em performance e 100 em acessibilidade (mediana de 3, medida na URL de preview da Vercel, não no servidor local).
+- Lighthouse celular ≥ 90 em performance e 100 em acessibilidade (mediana de 3, no build local com `npm start`; o servidor local costuma dar alguns pontos a menos que a Vercel, então compare antes e depois do mesmo jeito).
 - Nenhuma tarefa longa acima de 50 ms durante o scroll.
 - 60 fps no desktop e sem quedas visíveis num celular médio (Chrome com CPU 4× mais lenta).
 
@@ -100,11 +100,16 @@ Confira em 360, 390, 768, 1024, 1280, 1440 e 1920 px. Zero rolagem horizontal.
 - Se mexer em qualquer coisa da Parede, rode `node scripts/e2e-parede.mjs http://127.0.0.1:3121` contra o build de produção local. O script envia uma foto de teste, modera, aprova, confere a grade e a ficha e apaga tudo no fim. Para só limpar sobras, use `--so-limpar`. O armazenamento é o mesmo do site publicado, então nunca deixe teste para trás.
 - `npm run build` precisa terminar sem erros e sem nenhum aviso de "Dynamic server usage".
 
-## Entrega
+## Entrega (só local: nada de push nem de deploy)
 
-1. `docs/refino-ui.md`, com:
+**Não faça `git push`, não rode `vercel` e não mexa no site publicado.** Outra sessão vai subir o resultado para o GitHub e para a Vercel depois que eu revisar.
+
+1. Deixe o site rodando em localhost para eu revisar: `npm run build && npm start -- --port 3121` → http://localhost:3121. Me diga o endereço e o que olhar.
+2. Escreva `docs/refino-ui.md`, com:
    - o que mudou e por quê;
    - capturas antes e depois, no desktop e no celular;
-   - números de Lighthouse e de quadros por segundo, antes e depois.
-2. Push da branch `refino-ui` e um deploy de **preview** (`npx vercel deploy --yes`). Me mande o link.
-3. Merge na `main` e deploy de produção (`npx vercel deploy --prod --yes`) só depois que eu aprovar.
+   - números de Lighthouse e de quadros por segundo, antes e depois. Meça o Lighthouse no build local (`npm start`), o antes e o depois servidos do mesmo jeito.
+3. Faça commits na branch local `refino-ui` e exporte o resultado em dois arquivos na pasta `C:\Users\Icaronix\Documents\Claude\`:
+   - `vira-lata-refino-ui.bundle`: `git bundle create ../vira-lata-refino-ui.bundle main..refino-ui` (rodado dentro da pasta do projeto);
+   - `vira-lata-refino-ui.zip`: o projeto inteiro **sem** `node_modules`, `.next`, `.capturas` e `.env.local` (esse arquivo tem chaves e não pode sair da máquina).
+4. No fim, me passe o caminho dos dois arquivos, a lista de commits e um resumo curto do que mudou.
