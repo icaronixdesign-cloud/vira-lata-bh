@@ -33,5 +33,13 @@ export const SITE = {
 
 export const NAV = [
   { href: '/cardapio', rotulo: 'Cardápio' },
+  { href: '/o-bar', rotulo: 'O bar' },
+  { href: '/parede', rotulo: 'Parede' },
   { href: '/visite', rotulo: 'Visite' },
+] as const;
+
+export const MENU = [
+  { href: '/', rotulo: 'Início' },
+  ...NAV,
+  { href: '/imprensa', rotulo: 'Imprensa' },
 ] as const;

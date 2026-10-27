@@ -2,8 +2,14 @@ import Link from 'next/link';
 import { Horarios } from '@/components/Horarios';
 import { Letras } from '@/components/Letras';
 import { Selo } from '@/components/Selo';
+import { ParedeGaleria } from '@/components/ParedeGaleria';
 import { CARDAPIO, FIM_DE_SEMANA, destaques, reais } from '@/content/cardapio';
+import { EXEMPLOS } from '@/content/parede';
 import { MODO, SITE } from '@/content/site';
+import { aprovados, paraQuadro } from '@/lib/parede';
+
+// A chamada da Parede mostra as fotos aprovadas mais recentes.
+export const revalidate = 60;
 
 // O manifesto é o post de apresentação da casa no Instagram.
 const MANIFESTO = [
@@ -34,7 +40,8 @@ const CARTOES = [
   },
 ];
 
-export default function Inicio() {
+export default async function Inicio() {
+  const quadros = [...(await aprovados()).map(paraQuadro), ...EXEMPLOS].slice(0, 4);
   return (
     <>
       {/* 1. Abertura: o selo se monta como no destaque da casa */}
@@ -163,7 +170,30 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* 6. A chef */}
+      {/* 6. Parede de estimação */}
+      <section className="cartao c-creme pautado" aria-labelledby="parede-titulo">
+        <div className="miolo">
+          <Letras como="h2" id="parede-titulo" className="t-estencil titulo" texto="Parede de estimação" gesto="rolar" farejar />
+          <Letras
+            como="p"
+            className="texto"
+            preguicoso
+            gesto="pular"
+            texto="No bar, uma parede de porta-retratos com os cachorros da clientela. No site também: mande a foto do seu."
+          />
+          <ParedeGaleria quadros={quadros} />
+          <div className="acoes">
+            <Link href="/parede" className="botao abanar">
+              <Letras texto="Ver a Parede inteira" gesto="rolar" />
+            </Link>
+            <Link href="/parede#enviar" className="botao claro abanar">
+              <Letras texto="Coloque o seu" gesto="rolar" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. A chef */}
       <section className="cartao c-creme pautado" aria-labelledby="chef-titulo">
         <div className="miolo chef-grade">
           <div>

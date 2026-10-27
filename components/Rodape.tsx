@@ -40,7 +40,11 @@ export function Rodape() {
         </div>
         <div className="rodape-base t-maquina">
           <Link href="/cardapio">Cardápio</Link>
+          <Link href="/o-bar">O bar</Link>
+          <Link href="/parede">Parede</Link>
           <Link href="/visite">Visite</Link>
+          <Link href="/imprensa">Imprensa</Link>
+          <Link href="/privacidade">Privacidade</Link>
           {MODO === 'pitch' ? (
             <span className="conceito">Projeto conceito · proposta não oficial de site para o Vira-lata</span>
           ) : null}
