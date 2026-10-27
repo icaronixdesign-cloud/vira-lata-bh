@@ -2732,3 +2732,116 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   /latas: vitrine da lata 3D (arraste para girar, escolha a lata, abra e feche)
+   ========================================================================== */
+.vitrine {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+}
+
+.vitrine-palco {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  touch-action: pan-y;
+}
+
+.vitrine-palco img,
+.vitrine-palco canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vitrine-palco canvas {
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.vitrine-palco canvas:active {
+  cursor: grabbing;
+}
+
+.vitrine-palco[data-pronta] canvas {
+  opacity: 1;
+}
+
+.vitrine-palco img {
+  transition: opacity 0.45s ease;
+}
+
+.vitrine-palco[data-pronta] img {
+  opacity: 0;
+}
+
+.vitrine-dica {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50%;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.vitrine-painel {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  background: var(--creme);
+  box-shadow: 0 0 0 16px var(--creme);
+}
+
+.vitrine-num {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.vitrine-nome {
+  font: 800 clamp(24px, 2.6vw, 36px) / 1.1 var(--f-slab), Georgia, serif;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.vitrine-preco {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.vitrine-latas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.vitrine-lata {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 2px var(--marrom);
+  font: 700 15px/1 var(--f-maquina), monospace;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vitrine-lata[aria-pressed='true'] {
+  background: var(--marrom);
+  color: var(--creme);
+}
+
+@media (max-width: 860px) {
+  .vitrine {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

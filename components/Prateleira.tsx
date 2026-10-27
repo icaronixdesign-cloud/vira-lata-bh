@@ -321,6 +321,9 @@ export function Prateleira() {
               <Link href="/cardapio#latas" className="botao abanar">
                 <Letras texto={`Ver as ${latas.itens.length} latas no cardápio`} gesto="rolar" />
               </Link>
+              <Link href="/latas" className="botao claro abanar">
+                <Letras texto="Ver as latas em 3D" gesto="rolar" />
+              </Link>
             </div>
           </footer>
         </div>

@@ -254,8 +254,8 @@ export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTML
     tamanho,
     carregaRotulos,
     libera: () => {
+      // só libera recursos: o canvas pode ser reaproveitado (React em dev monta o efeito duas vezes)
       renderer.dispose();
-      renderer.forceContextLoss();
     },
     info: () => ({ tamanho: [largura, altura, dpr], programas: renderer.info.programs?.length, chamadas: renderer.info.render.calls, triangulos: renderer.info.render.triangles }),
   };
