@@ -34,11 +34,11 @@ export function BarraInferior() {
           Menu
         </button>
       </nav>
-      <dialog ref={menu} className="menu c-laranja pautado" aria-label="Menu">
+      <dialog ref={menu} className="menu c-laranja" aria-label="Menu">
         <form method="dialog" className="menu-fechar">
           <button className="botao claro">Fechar</button>
         </form>
-        <ul key={vez}>
+        <ul key={vez} className="pautado">
           {MENU.map((item, i) => (
             <li key={item.href}>
               <Link href={item.href} className="abanar" aria-current={caminho === item.href ? 'page' : undefined}>

@@ -18,6 +18,7 @@
   --margem: clamp(16px, 4vw, 48px);
   --topo: 96px;
   --vidro: rgb(245 233 209 / 0.94);
+  --raio: 24px;
   --sombra: 0 1px 0 rgb(110 63 69 / 0.08), 0 16px 32px -16px rgb(75 38 43 / 0.5);
   --mola: cubic-bezier(0.34, 1.56, 0.64, 1);
   --solta: cubic-bezier(0.16, 1, 0.3, 1);
@@ -235,7 +236,7 @@ button {
 
 /* Texto corrido e texto pequeno nunca ficam sobre uma linha da pauta:
    o bloco apaga a pauta atrás de si com o fundo da própria seção. */
-.pautado :is(.texto, .cardapio-intro, .abertura-sub, .fds-pais, .manifesto-assina, .titulo, .parede-sub, .destaques, .perguntas, .release, .fatos, .nota, .parede-nota, .envio-grade, .envio-aviso, .rodape-grade, .rodape-base, .quadro-nome, .endereco address, .menu .link, .lab-caso header, .capa p) {
+.pautado :is(.texto, .cardapio-intro, .abertura-sub, .fds-pais, .manifesto-assina, .titulo, .parede-sub, .destaques, .perguntas, .release, .fatos, .nota, .parede-nota, .envio-grade, .rodape-grade, .rodape-base, .quadro-nome, .endereco address, .menu .link, .lab-caso header, .capa p) {
   background-color: var(--fundo, var(--creme));
   box-shadow: 0 0 0 12px var(--fundo, var(--creme));
   border-radius: 1px;
@@ -670,8 +671,8 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 56px;
+  padding: 0 20px;
   border-radius: 999px;
   font: 700 15px/1 var(--f-maquina), monospace;
   text-transform: uppercase;
@@ -746,6 +747,7 @@ button {
   font: 700 15px/1 var(--f-estencil), serif;
   text-transform: uppercase;
   text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -780,16 +782,17 @@ button {
   justify-self: end;
 }
 
+/* Os links do menu assentam na pauta: um por linha do papel, com a régua de divisória. */
 .menu ul {
   display: grid;
-  gap: 4px;
+  gap: 0;
+  background-position: 0 -10px;
 }
 
 .menu li a {
   display: block;
-  padding: 4px 0;
-  font-size: clamp(44px, 12vw, 84px);
-  line-height: 1.05;
+  font-size: min(11vw, calc(var(--pauta) * 0.92));
+  line-height: var(--pauta);
   text-decoration: none;
 }
 
@@ -850,11 +853,21 @@ button {
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.14),
     0 14px 28px -14px rgb(75 38 43 / 0.75);
-  transition: transform 0.35s var(--mola);
+  transition:
+    transform 0.35s var(--mola),
+    box-shadow 0.2s;
 }
 
 .botao:hover {
   transform: translateY(-2px) rotate(-1.5deg);
+}
+
+.botao:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 6px 14px -8px rgb(75 38 43 / 0.75);
+  transition-duration: 0.1s, 0.1s;
 }
 
 .botao.claro {
@@ -922,6 +935,13 @@ button {
   font-size: clamp(19px, 1.7vw, 23px);
   font-weight: 600;
   line-height: 1.5;
+}
+
+/* O halo que apaga a pauta tem 12px: todo texto colado num título ganha este respiro. */
+.titulo + .texto,
+.titulo + .cardapio-intro,
+.titulo + .resposta {
+  margin-top: 16px;
 }
 
 /* Títulos nunca deixam uma palavra sozinha na última linha. */
@@ -1451,7 +1471,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 
 .citacao {
   padding: 32px;
-  border-radius: 24px;
+  border-radius: var(--raio);
   background: var(--marrom);
   color: var(--creme);
 }
@@ -1482,7 +1502,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 
 .painel {
   padding: 40px clamp(24px, 4vw, 48px);
-  border-radius: 24px;
+  border-radius: var(--raio);
   box-shadow: var(--sombra);
 }
 
@@ -1517,8 +1537,9 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 .horarios li[data-hoje]::before {
   content: 'hoje';
   position: absolute;
-  left: -10px;
+  left: -12px;
   top: 0;
+  translate: -55% 0;
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--marrom);
@@ -1567,8 +1588,9 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   padding: calc(var(--topo) + 40px) var(--margem) 56px;
 }
 
+/* O piso acompanha telas estreitas: "Privacidade" (11 letras) precisa caber inteira num 360. */
 .topo-pagina .t-gigante {
-  font-size: clamp(88px, 19vw, 300px);
+  font-size: clamp(56px, 18vw, 300px);
 }
 
 .chips {
@@ -1637,8 +1659,8 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 6px 24px;
-  padding: 18px 0;
+  gap: 8px 24px;
+  padding: 16px 0;
   border-bottom: 2px solid var(--marrom);
 }
 
@@ -1662,7 +1684,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 .acompanha {
   margin-top: 32px;
   padding: clamp(24px, 4vw, 40px);
-  border-radius: 24px;
+  border-radius: var(--raio);
   background: var(--marrom);
   color: var(--creme);
 }
@@ -1704,7 +1726,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 }
 
 .perguntas li {
-  padding: 20px 0;
+  padding: 24px 0;
   border-bottom: 2px solid var(--marrom);
 }
 
@@ -1824,7 +1846,12 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 
 .duas-colunas .t-gigante {
   font-size: clamp(72px, 9.5vw, 150px);
-  white-space: nowrap;
+}
+
+@media (min-width: 861px) {
+  .duas-colunas .t-gigante {
+    white-space: nowrap;
+  }
 }
 
 .estrofe + .estrofe {
@@ -1897,7 +1924,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   gap: 8px;
   min-height: 128px;
   padding: 24px;
-  border-radius: 20px;
+  border-radius: var(--raio);
   background: var(--creme);
   box-shadow: var(--sombra);
   text-decoration: none;
@@ -2141,7 +2168,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   max-height: 92svh;
   padding: 32px;
   border: 0;
-  border-radius: 28px;
+  border-radius: var(--raio);
   background: var(--creme);
   color: var(--marrom);
   box-shadow: 0 40px 80px -24px rgb(75 38 43 / 0.7);
@@ -2215,7 +2242,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   gap: 8px;
   padding: 32px 24px;
   border: 3px dashed var(--marrom);
-  border-radius: 24px;
+  border-radius: var(--raio);
   background: rgb(255 255 255 / 0.3);
   text-align: center;
   cursor: pointer;
@@ -2363,7 +2390,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
   grid-template-columns: 120px minmax(0, 1fr);
   gap: 16px;
   padding: 16px;
-  border-radius: 20px;
+  border-radius: var(--raio);
   background: rgb(255 255 255 / 0.45);
   box-shadow: var(--sombra);
 }
@@ -2405,7 +2432,7 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 
 .lab-caso {
   padding: 32px;
-  border-radius: 24px;
+  border-radius: var(--raio);
   box-shadow: var(--sombra);
 }
 
@@ -2434,6 +2461,10 @@ html.js .prateleira[data-imersiva] .prateleira-chave {
 .sumiu-cachorro {
   width: min(56vw, 280px);
   margin: 0 auto 32px;
+}
+
+.sumiu .texto {
+  margin-inline: auto;
 }
 
 .sumiu {
