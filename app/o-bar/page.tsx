@@ -24,7 +24,7 @@ export default function OBar() {
   let linha = 0;
   return (
     <>
-      <header className="topo-pagina c-laranja pautado">
+      <header className="topo-pagina c-laranja">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="O bar" gesto="carimbar" passo={70} />
           <Letras
@@ -62,7 +62,7 @@ export default function OBar() {
         </div>
       </section>
 
-      <section className="secao c-azul pautado" aria-labelledby="nome-titulo">
+      <section className="secao c-azul" aria-labelledby="nome-titulo">
         <div className="miolo duas-colunas">
           <Letras como="h2" id="nome-titulo" className="t-gigante carimbo" texto="O nome" gesto="carimbar" />
           <div>
@@ -88,7 +88,7 @@ export default function OBar() {
         <h2 id="latas-titulo" className="sr">
           Duas latas, uma mesa
         </h2>
-        <div className="c-azul pautado lado">
+        <div className="c-azul lado">
           <Letras como="p" className="fds-pais" texto="Portugal" gesto="datilografar" />
           <Letras como="h3" className="t-gigante carimbo" texto="Conserva" gesto="carimbar" />
           <Letras
@@ -99,7 +99,7 @@ export default function OBar() {
             texto="Sardinha, atum e outros pescados vão para latas ilustradas que viram lembrança de viagem."
           />
         </div>
-        <div className="c-laranja pautado lado">
+        <div className="c-laranja lado">
           <Letras como="p" className="fds-pais" texto="Minas" gesto="datilografar" />
           <Letras como="h3" className="t-gigante carimbo" texto="Carne de lata" gesto="carimbar" />
           <Letras
@@ -112,7 +112,7 @@ export default function OBar() {
         </div>
       </section>
 
-      <section className="secao c-creme pautado" aria-labelledby="espaco-titulo">
+      <section className="secao c-creme" aria-labelledby="espaco-titulo">
         <div className="miolo duas-colunas">
           <Letras como="h2" id="espaco-titulo" className="t-estencil titulo" texto="O espaço" gesto="rolar" farejar />
           <div>
@@ -139,7 +139,7 @@ export default function OBar() {
         </div>
       </section>
 
-      <section className="secao c-rosa pautado" aria-labelledby="chef-titulo">
+      <section className="secao c-rosa" aria-labelledby="chef-titulo">
         <div className="miolo chef-grade">
           <div>
             <Letras como="h2" id="chef-titulo" className="t-estencil titulo" texto="Bruna Martins" gesto="rolar" farejar />
@@ -165,7 +165,7 @@ export default function OBar() {
         </div>
       </section>
 
-      <section className="secao c-azul pautado" aria-labelledby="rua-titulo">
+      <section className="secao c-azul" aria-labelledby="rua-titulo">
         <div className="miolo duas-colunas">
           <div>
             <Letras como="h2" id="rua-titulo" className="t-estencil titulo" texto="A rua" gesto="rolar" farejar />

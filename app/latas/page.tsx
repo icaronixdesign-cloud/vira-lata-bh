@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 export default function Latas() {
   return (
     <>
-      <header className="topo-pagina c-laranja pautado">
+      <header className="topo-pagina c-laranja">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Latas" gesto="carimbar" passo={60} />
         </div>
       </header>
-      <section className="cartao c-creme pautado vitrine-sec" aria-label="Vitrine das latas">
+      <section className="cartao c-creme vitrine-sec" aria-label="Vitrine das latas">
         <div className="miolo">
           <LataVitrine />
         </div>

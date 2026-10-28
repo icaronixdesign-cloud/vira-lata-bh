@@ -20,7 +20,7 @@ export default async function Parede() {
 
   return (
     <>
-      <header className="topo-pagina c-rosa pautado">
+      <header className="topo-pagina c-rosa">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Parede" gesto="carimbar" />
           <Letras como="p" className="parede-sub t-estencil" texto="de estimação" gesto="rolar" atraso={600} />
@@ -46,7 +46,7 @@ export default async function Parede() {
         ) : null}
       </section>
 
-      <section id="enviar" className="envio-secao c-creme pautado" aria-labelledby="enviar-titulo">
+      <section id="enviar" className="envio-secao c-creme" aria-labelledby="enviar-titulo">
         <div className="miolo">
           <Letras como="h2" id="enviar-titulo" className="t-estencil titulo" texto="Coloque seu cachorro na parede" gesto="rolar" farejar />
           <ParedeForm ativo={PAREDE_ATIVA} pitch={MODO === 'pitch'} />

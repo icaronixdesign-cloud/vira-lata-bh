@@ -12,7 +12,7 @@ export function Cabecalho() {
   return (
     <header className="cabecalho">
       <Link href="/" className="marca abanar">
-        <Selo tamanho="44px" girar />
+        <Selo tamanho="40px" />
         <Letras texto="Vira-lata" gesto="rolar" className="marca-nome" />
       </Link>
       <nav className="nav" aria-label="Principal">

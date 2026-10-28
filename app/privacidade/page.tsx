@@ -33,14 +33,14 @@ const TOPICOS = [
 
 export default function Privacidade() {
   return (
-    <section className="topo-pagina c-creme pautado">
+    <section className="topo-pagina c-creme">
       <div className="miolo">
         <Letras como="h1" className="t-gigante carimbo" texto="Privacidade" gesto="carimbar" passo={45} />
         <ul className="perguntas">
           {TOPICOS.map((topico) => (
             <li key={topico.t}>
               <Letras como="h2" className="pergunta" texto={topico.t} gesto="sacudir" preguicoso />
-              <Letras como="p" className="resposta t-maquina" texto={topico.r} gesto="datilografar" preguicoso />
+              <Letras como="p" className="resposta" texto={topico.r} gesto="datilografar" preguicoso />
             </li>
           ))}
         </ul>

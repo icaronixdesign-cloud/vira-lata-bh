@@ -1,25 +1,68 @@
 /* ==========================================================================
    Vira-lata · estilos
-   Cores e grafismo tirados dos stories da casa (prints em docs/referencias).
-   Espaços em múltiplos de 8; o papel pautado é a grade.
+   O sistema vem dos stories da casa (prints em docs/referencias): cor chapada de ponta a ponta,
+   fios finos entre os itens, estêncil nos títulos, serifa pesada e condensada nos itens,
+   máquina de escrever nos detalhes e palavras gigantes carimbadas. Nada de sombra borrada:
+   o que flutua ganha contorno de etiqueta.
+   Régua de 8: espaços, alturas e entrelinhas em múltiplos de 8 (4 só em micro ajustes).
    ========================================================================== */
 
 :root {
-  --marrom: #6e3f45;
-  --marrom-escuro: #4b262b;
+  /* Cores da casa */
+  --marrom: #6e3f45; /* tinta da marca: selo, cachorro, títulos, palavras gigantes */
+  --tinta: #4b262b; /* texto corrido, miúdo e fios: AA em todos os fundos da casa */
   --laranja: #f5881f;
   --azul: #00a4fe;
   --creme: #f5e9d1;
   --rosa: #f5bbb0;
   --metal: #cfcac0;
-  --linha: rgb(110 63 69 / 0.24);
+  --linha: rgb(75 38 43 / 0.18); /* pauta: só onde o texto assenta nela */
+  --fio: 1.5px;
+  --fio-forte: 2px;
+  --contorno: 0 0 0 var(--fio) var(--tinta);
+
+  /* Espaços (régua de 8) */
+  --e1: 8px;
+  --e2: 16px;
+  --e3: 24px;
+  --e4: 32px;
+  --e5: 40px;
+  --e6: 48px;
+  --e8: 64px;
+  --e10: 80px;
+  --e12: 96px;
+  --e16: 128px;
+  --margem: 80px; /* em degraus da régua (80 · 64 · 40 · 24), nunca fluida */
+  --max: 1280px;
+  --secao: 144px;
+  --topo: 96px; /* 16 de folga + 48 do cabeçalho + 32 de respiro */
   --pauta: 64px;
-  --max: 1200px;
-  --margem: clamp(16px, 4vw, 48px);
-  --topo: 96px;
-  --vidro: rgb(245 233 209 / 0.94);
+
+  /* Escala de tipos (entrelinhas fixas na régua) */
+  --t-h1: clamp(48px, 7vw, 120px);
+  --t-h2: clamp(40px, 5.6vw, 88px);
+  --t-h3: clamp(28px, 2.8vw, 40px);
+  --t-item: clamp(22px, 2.4vw, 34px);
+  --t-lead: clamp(20px, 1.6vw, 24px);
+  --t-corpo: 18px;
+  --t-menor: 15px;
+  --t-etiqueta: 12px;
+  --lh-lead: 32px;
+  --lh-corpo: 28px;
+  --lh-menor: 24px;
+  --lh-etiqueta: 16px;
+  --ui-largura: 72%; /* a serifa condensada da interface */
+  --item-largura: 62%; /* a serifa bem condensada dos itens, como nos stories */
+
+  /* Forma */
+  --raio-1: 8px;
+  --raio-2: 16px;
   --raio: 24px;
-  --sombra: 0 1px 0 rgb(110 63 69 / 0.08), 0 16px 32px -16px rgb(75 38 43 / 0.5);
+  --raio-cartao: 32px;
+  --vidro: var(--creme);
+  --sombra: var(--contorno);
+
+  /* Movimento */
   --mola: cubic-bezier(0.34, 1.56, 0.64, 1);
   --solta: cubic-bezier(0.16, 1, 0.3, 1);
   --vt-out: 380ms;
@@ -28,10 +71,27 @@
   color-scheme: light;
 }
 
+@media (max-width: 1439px) {
+  :root {
+    --margem: 64px;
+  }
+}
+
+@media (max-width: 1080px) {
+  :root {
+    --margem: 40px;
+    --secao: 128px;
+  }
+}
+
 @media (max-width: 720px) {
   :root {
+    --margem: 24px;
+    --secao: 96px;
     --pauta: 48px;
     --topo: 88px;
+    --t-corpo: 17px;
+    --raio-cartao: 24px;
   }
 }
 
@@ -49,9 +109,12 @@ html {
 body {
   margin: 0;
   background: var(--creme);
-  color: var(--marrom);
-  font: 400 18px/1.55 var(--f-slab), Georgia, serif;
+  color: var(--tinta);
+  font: 400 var(--t-corpo) / var(--lh-corpo) var(--f-texto), Georgia, serif;
+  font-kerning: normal;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
 }
 
@@ -76,7 +139,8 @@ svg {
 
 a {
   color: inherit;
-  text-underline-offset: 0.18em;
+  text-decoration-thickness: var(--fio);
+  text-underline-offset: 0.24em;
 }
 
 ul {
@@ -92,11 +156,11 @@ button {
 
 ::selection {
   background: var(--laranja);
-  color: var(--marrom-escuro);
+  color: var(--tinta);
 }
 
 :focus-visible {
-  outline: 3px solid var(--marrom);
+  outline: 3px solid var(--tinta);
   outline-offset: 3px;
   border-radius: 8px;
 }
@@ -134,34 +198,71 @@ button {
   margin-inline: auto;
 }
 
-/* ---------- Tipografia ---------- */
+/* ---------- Tipografia: um papel por família ---------- */
 
+/* Estêncil: títulos de 28 px para cima. Fica sempre na tinta da marca (ou no creme, dentro do marrom). */
 .t-estencil {
   font-family: var(--f-estencil), 'Courier New', serif;
   font-weight: 700;
   text-transform: uppercase;
-  line-height: 0.98;
-  letter-spacing: 0.01em;
+  line-height: 0.92;
+  letter-spacing: 0;
+  color: var(--titulo, var(--marrom));
 }
 
+/* Serifa pesada e condensada: itens do cardápio e nomes de lata, como nos stories. */
+.t-item,
 .t-slab {
-  font-family: var(--f-slab), Georgia, serif;
-  font-weight: 800;
+  font-family: var(--f-texto), Georgia, serif;
+  font-weight: 900;
+  font-stretch: var(--item-largura);
   text-transform: uppercase;
-  line-height: 1.06;
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+
+/* A mesma serifa, um pouco menos condensada, nos rótulos de interface (navegação, botões, chips). */
+.t-ui,
+.nav a,
+.barra a,
+.barra button,
+.botao,
+.chips a,
+.vitrine-lata {
+  font-family: var(--f-texto), Georgia, serif;
+  font-weight: 800;
+  font-stretch: var(--ui-largura);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
 }
 
 .t-maquina {
   font-family: var(--f-maquina), 'Courier New', monospace;
 }
 
+/* Etiqueta: máquina de escrever miúda em caixa-alta espaçada (metadados, legendas, rótulos). */
+.t-etiqueta {
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Texto de apoio logo abaixo dos títulos. */
+.t-lead {
+  font-size: var(--t-lead);
+  font-weight: 500;
+  line-height: var(--lh-lead);
+}
+
 .t-gigante {
   font-family: var(--f-carimbo), Impact, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
-  line-height: 0.82;
-  letter-spacing: -0.005em;
+  line-height: 0.86;
+  letter-spacing: 0;
   font-size: clamp(96px, 23vw, 360px);
+  color: var(--titulo, var(--marrom));
 }
 
 /* Tinta de carimbo gasto: grão e riscos de pincel seco, como nas capas do cardápio da casa.
@@ -191,55 +292,44 @@ button {
   content: '】';
 }
 
-/* Papel pautado */
+/* Pauta: só onde o texto assenta nela (manifesto, horários e menu), nunca como fundo de seção.
+   As outras seções ficam na cor chapada, como os stories; os fios aparecem entre os itens. */
 .pautado {
   background-image: repeating-linear-gradient(
     to bottom,
-    transparent 0 calc(var(--pauta) - 1.5px),
-    var(--linha) calc(var(--pauta) - 1.5px) var(--pauta)
+    transparent 0 calc(var(--pauta) - 1px),
+    var(--linha) calc(var(--pauta) - 1px) var(--pauta)
   );
 }
 
-/* Cada cor guarda o próprio fundo (--fundo) para os blocos de texto apagarem a pauta atrás de si.
-   No azul e no laranja, a tinta desce para o marrom escuro: contraste AA para texto de qualquer tamanho. */
+/* Cada cor da casa. No azul e no laranja, texto e fios ficam no marrom escuro (AA para qualquer tamanho);
+   títulos e palavras gigantes seguem no marrom da marca (texto grande, AA). */
 .c-azul {
   background-color: var(--azul);
   --fundo: var(--azul);
-  --linha: rgb(75 38 43 / 0.3);
-  color: var(--marrom-escuro);
+  --linha: rgb(75 38 43 / 0.28);
+  color: var(--tinta);
 }
 
 .c-laranja {
   background-color: var(--laranja);
   --fundo: var(--laranja);
-  --linha: rgb(75 38 43 / 0.3);
+  --linha: rgb(75 38 43 / 0.28);
   --marca: var(--creme);
-  color: var(--marrom-escuro);
+  color: var(--tinta);
 }
 
 .c-rosa {
   background-color: var(--rosa);
   --fundo: var(--rosa);
-  --linha: rgb(110 63 69 / 0.28);
+  --linha: rgb(75 38 43 / 0.24);
+  color: var(--tinta);
 }
 
 .c-creme {
   background-color: var(--creme);
   --fundo: var(--creme);
-}
-
-/* As palavras carimbadas continuam no marrom da marca: gigantes, passam no AA de texto grande. */
-.c-azul .t-gigante,
-.c-laranja .t-gigante {
-  color: var(--marrom);
-}
-
-/* Texto corrido e texto pequeno nunca ficam sobre uma linha da pauta:
-   o bloco apaga a pauta atrás de si com o fundo da própria seção. */
-.pautado :is(.texto, .cardapio-intro, .abertura-sub, .fds-pais, .manifesto-assina, .titulo, .parede-sub, .destaques, .perguntas, .release, .fatos, .nota, .parede-nota, .envio-grade, .rodape-grade, .rodape-base, .quadro-nome, .endereco address, .menu .link, .lab-caso header, .capa p) {
-  background-color: var(--fundo, var(--creme));
-  box-shadow: 0 0 0 12px var(--fundo, var(--creme));
-  border-radius: 1px;
+  color: var(--tinta);
 }
 
 /* ==========================================================================
@@ -598,15 +688,17 @@ button {
    Cabeçalho, barra do celular e status
    ========================================================================== */
 
+/* Três etiquetas de 48 px na mesma linha de base: marca, navegação e status.
+   Creme chapado com contorno fino de tinta: legíveis sobre qualquer cor e sem desfoque por quadro. */
 .cabecalho {
   position: fixed;
   z-index: 60;
-  top: 16px;
+  top: var(--e2);
   left: var(--margem);
   right: var(--margem);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--e1);
   pointer-events: none;
 }
 
@@ -614,83 +706,96 @@ button {
   pointer-events: auto;
 }
 
-/* Sem backdrop-filter nas pílulas fixas: o vidro quase opaco dá o mesmo efeito
-   e o scroll não paga o desfoque a cada quadro. */
 .marca,
 .nav,
 .status {
-  background: var(--vidro);
-  box-shadow: var(--sombra);
+  background: var(--creme);
+  color: var(--tinta);
+  box-shadow: var(--contorno);
 }
 
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 6px 20px 6px 6px;
+  gap: var(--e1);
+  height: 48px;
+  padding: 4px var(--e3) 4px 4px;
   border-radius: 999px;
   text-decoration: none;
 }
 
+/* O selo do cabeçalho fica parado (texto girando em 40 px tremula); dá uma volta no hover. */
+.marca .anel {
+  transition: rotate 0.9s var(--solta);
+}
+
+.marca:hover .anel {
+  rotate: 180deg;
+}
+
 .marca-nome {
-  font: 700 19px/1 var(--f-estencil), serif;
+  font: 700 20px/1 var(--f-estencil), serif;
+  color: var(--marrom);
   text-transform: uppercase;
 }
 
 .nav {
   display: flex;
-  gap: 4px;
+  gap: 0;
+  height: 48px;
   margin-left: auto;
-  padding: 6px;
+  padding: 4px;
   border-radius: 999px;
 }
 
 .nav a {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 var(--e2);
   border-radius: 999px;
-  font: 700 17px/1 var(--f-estencil), serif;
-  text-transform: uppercase;
+  font-size: 15px;
   text-decoration: none;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .nav a:hover {
-  background: rgb(110 63 69 / 0.1);
+  background: rgb(75 38 43 / 0.08);
 }
 
 .nav a[aria-current='page'] {
-  background: var(--marrom);
+  background: var(--tinta);
   color: var(--creme);
 }
 
 .status {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 0 20px;
+  gap: var(--e1);
+  height: 48px;
+  padding: 0 var(--e3);
   border-radius: 999px;
-  font: 700 15px/1 var(--f-maquina), monospace;
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .status-ponto {
   position: relative;
-  width: 10px;
-  height: 10px;
+  flex: none;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: transparent;
-  box-shadow: inset 0 0 0 2px var(--marrom);
+  box-shadow: inset 0 0 0 1.5px var(--tinta);
 }
 
 .status[data-estado='aberto'] .status-ponto {
   background: var(--azul);
-  box-shadow: inset 0 0 0 2px var(--marrom);
+  box-shadow: inset 0 0 0 1.5px var(--tinta);
 }
 
 .status[data-estado='aberto'] .status-ponto::after {
@@ -722,16 +827,17 @@ button {
 .barra {
   position: fixed;
   z-index: 60;
-  left: 12px;
-  right: 12px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: var(--e2);
+  right: var(--e2);
+  bottom: calc(var(--e2) + env(safe-area-inset-bottom));
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  padding: 6px;
+  gap: 0;
+  padding: 4px;
   border-radius: 999px;
-  background: var(--vidro);
-  box-shadow: var(--sombra);
+  background: var(--creme);
+  color: var(--tinta);
+  box-shadow: var(--contorno);
 }
 
 .barra a,
@@ -739,20 +845,19 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  height: 48px;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: none;
-  font: 700 15px/1 var(--f-estencil), serif;
-  text-transform: uppercase;
+  font-size: 14px;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
 }
 
 .barra a:first-child {
-  background: var(--marrom);
+  background: var(--tinta);
   color: var(--creme);
 }
 
@@ -763,15 +868,15 @@ button {
   height: 100%;
   max-height: none;
   margin: 0;
-  padding: calc(24px + env(safe-area-inset-top)) var(--margem) 32px;
+  padding: calc(var(--e2) + env(safe-area-inset-top)) var(--margem) var(--e4);
   border: 0;
-  color: var(--marrom);
+  color: var(--tinta);
 }
 
 .menu[open] {
   display: grid;
   align-content: start;
-  gap: 24px;
+  gap: var(--e3);
 }
 
 .menu::backdrop {
@@ -837,25 +942,25 @@ button {
    Botões e links
    ========================================================================== */
 
+/* Botões chapados: o principal em tinta cheia, o secundário só no contorno. Sem sombra. */
 .botao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--e1);
   min-height: 56px;
-  padding: 0 28px;
+  padding: 0 var(--e4);
+  border: 0;
   border-radius: 999px;
-  background: var(--marrom);
+  background: var(--tinta);
   color: var(--creme);
-  font: 700 18px/1 var(--f-estencil), serif;
-  text-transform: uppercase;
+  font-size: 15px;
   text-decoration: none;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.14),
-    0 14px 28px -14px rgb(75 38 43 / 0.75);
+  cursor: pointer;
   transition:
     transform 0.35s var(--mola),
-    box-shadow 0.2s;
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .botao:hover {
@@ -864,48 +969,55 @@ button {
 
 .botao:active {
   transform: translateY(0) scale(0.97);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.14),
-    0 6px 14px -8px rgb(75 38 43 / 0.75);
-  transition-duration: 0.1s, 0.1s;
+  transition-duration: 0.1s;
 }
 
-.botao.claro {
-  background: var(--creme);
-  color: var(--marrom);
-}
-
+.botao.claro,
 .botao.vazado {
   background: transparent;
-  color: var(--marrom);
-  box-shadow: inset 0 0 0 2px var(--marrom);
+  color: var(--tinta);
+  box-shadow: inset 0 0 0 var(--fio-forte) var(--tinta);
+}
+
+.botao.claro:hover,
+.botao.vazado:hover {
+  background: var(--tinta);
+  color: var(--creme);
 }
 
 .acoes {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
+  gap: var(--e2);
+  margin-top: var(--e5);
 }
 
 .link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  font: 700 17px/1 var(--f-maquina), monospace;
+  min-height: 48px;
+  font: 700 var(--t-menor) / 1 var(--f-maquina), monospace;
   text-decoration: underline;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: var(--fio);
+  text-underline-offset: 0.3em;
+}
+
+.link:hover {
+  text-decoration-thickness: 3px;
 }
 
 .conceito-tag {
-  display: inline-block;
-  margin-top: 24px;
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e1);
+  height: 32px;
+  margin-top: var(--e4);
+  padding: 0 var(--e2);
   border-radius: 999px;
-  background: rgb(245 233 209 / 0.85);
-  font: 700 13px/1.2 var(--f-maquina), monospace;
+  box-shadow: inset 0 0 0 1px currentColor;
+  font: 700 var(--t-etiqueta) / 1 var(--f-maquina), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.12em;
 }
 
 /* ==========================================================================
@@ -916,32 +1028,42 @@ button {
   position: sticky;
   top: min(0px, calc(100svh - var(--h, 100svh)));
   min-height: 100svh;
-  padding: calc(var(--topo) + 32px) var(--margem) 104px;
+  padding: calc(var(--topo) + var(--e4)) var(--margem) var(--e12);
   isolation: isolate;
   overflow: clip;
 }
 
-:is(.cartao, .prateleira) + .cartao {
-  border-radius: 32px 32px 0 0;
-  box-shadow: 0 -16px 32px -16px rgb(75 38 43 / 0.4);
+/* Seções curtas ficam no meio da tela em vez de deixar um vão embaixo */
+.cartao:not(.fds) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+}
+
+/* A borda de cada folha que sobe: um fio de tinta no topo arredondado e só um respiro de sombra. */
+:is(.cartao, .prateleira) + .cartao,
+.cartao + .prateleira {
+  border-radius: var(--raio-cartao) var(--raio-cartao) 0 0;
+  box-shadow:
+    0 calc(-1 * var(--fio)) 0 var(--tinta),
+    0 -24px 48px -40px rgb(75 38 43 / 0.5);
 }
 
 .titulo {
-  font-size: clamp(40px, 6vw, 88px);
+  font-size: var(--t-h2);
 }
 
 .texto {
-  max-width: 52ch;
-  font-size: clamp(19px, 1.7vw, 23px);
-  font-weight: 600;
-  line-height: 1.5;
+  max-width: 34em;
+  font-size: var(--t-lead);
+  font-weight: 400;
+  line-height: var(--lh-lead);
 }
 
-/* O halo que apaga a pauta tem 12px: todo texto colado num título ganha este respiro. */
 .titulo + .texto,
 .titulo + .cardapio-intro,
 .titulo + .resposta {
-  margin-top: 16px;
+  margin-top: var(--e3);
 }
 
 /* Títulos nunca deixam uma palavra sozinha na última linha. */
@@ -962,21 +1084,22 @@ button {
 
 .abertura-grade {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
   align-items: center;
-  gap: 48px;
+  gap: var(--e6);
 }
 
 .abertura h1 {
-  font-size: clamp(44px, 6.6vw, 104px);
+  font-size: var(--t-h1);
+  line-height: 0.9;
 }
 
 .abertura-sub {
-  margin-top: 24px;
-  max-width: 30ch;
-  font-size: clamp(20px, 1.8vw, 24px);
-  font-weight: 700;
-  line-height: 1.4;
+  margin-top: var(--e4);
+  max-width: 22em;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  line-height: var(--lh-lead);
 }
 
 .abertura .selo {
@@ -986,38 +1109,49 @@ button {
 @media (max-width: 860px) {
   .abertura-grade {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: var(--e4);
   }
 
   .abertura .selo {
-    --selo: min(64vw, 300px, 36svh) !important;
+    --selo: min(64vw, 288px, 36svh) !important;
     order: -1;
   }
 
   .abertura h1 {
-    font-size: clamp(36px, 10vw, 64px);
+    font-size: clamp(40px, 11vw, 64px);
+  }
+
+  .abertura-sub {
+    margin-top: var(--e3);
+  }
+
+  .abertura .acoes {
+    margin-top: var(--e4);
   }
 }
 
-/* Manifesto: cada frase numa linha do pautado */
-.manifesto .miolo {
-  max-width: 1040px;
-}
+/* Manifesto: cada frase assenta numa linha da pauta (na mesma grade das outras seções) */
 
-/* O pautado fica só atrás das frases, deslocado para a linha cair na base das letras. */
+/* A pauta fica só atrás das frases, deslocada para a linha cair na base das letras. */
+/* Na Roboto Serif a linha de base fica a pauta/2 + 0,33 × corpo do topo da linha:
+   a régua do papel cai 2 px abaixo dela em qualquer tamanho (medido em 390, 1024 e 1440). */
 .manifesto-linhas {
+  --corpo-manifesto: clamp(22px, 3.6vw, 48px);
   display: grid;
-  margin-top: var(--pauta);
-  background-position: 0 -14px;
+  margin-top: var(--e8);
+  background-position: 0 calc(var(--pauta) / -2 + 0.33 * var(--corpo-manifesto) + 3px);
 }
 
 .manifesto-linhas p {
-  font: 800 clamp(24px, 3.8vw, 48px) / var(--pauta) var(--f-slab), Georgia, serif;
+  font: 500 var(--corpo-manifesto) / var(--pauta) var(--f-texto), Georgia, serif;
+  letter-spacing: -0.01em;
 }
 
 .manifesto-assina {
-  margin-top: var(--pauta);
-  font: 700 18px/1.4 var(--f-maquina), monospace;
+  margin-top: var(--e6);
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 /* A lata (provisória em 2D até o modelo 3D chegar) */
@@ -1025,7 +1159,7 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   align-items: center;
-  gap: 56px;
+  gap: var(--e8);
 }
 
 .lata {
@@ -1120,8 +1254,10 @@ button {
 .prateleira {
   position: relative;
   background: var(--creme);
-  border-radius: 32px 32px 0 0;
-  box-shadow: 0 -16px 32px -16px rgb(75 38 43 / 0.4);
+  border-radius: var(--raio-cartao) var(--raio-cartao) 0 0;
+  box-shadow:
+    0 calc(-1 * var(--fio)) 0 var(--tinta),
+    0 -24px 48px -40px rgb(75 38 43 / 0.5);
   overflow: clip;
 }
 
@@ -1152,7 +1288,7 @@ button {
 .prateleira-trilho {
   display: flex;
   align-items: center;
-  gap: clamp(24px, 4vw, 64px);
+  gap: var(--prateleira-gap, var(--e6));
   padding: 8px var(--margem) 32px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
@@ -1186,41 +1322,39 @@ html.js .prateleira[data-imersiva] .prateleira-dica .so-faixa {
 }
 
 .prateleira-dica {
-  margin-top: 24px;
-  font-size: 15px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e1);
+  margin-top: var(--e3);
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background-color: var(--fundo, var(--creme));
-  box-shadow: 0 0 0 8px var(--fundo, var(--creme));
+  letter-spacing: 0.12em;
 }
 
 /* A prateleira em si: as latas assentam numa tábua única */
 .prateleira-latas {
   display: flex;
   align-items: stretch;
-  gap: clamp(24px, 3vw, 48px);
-  padding: 8px clamp(16px, 2vw, 32px) 24px;
-  border-bottom: 5px solid rgb(75 38 43 / 0.5);
-  border-radius: 2px;
+  gap: var(--prateleira-gap, var(--e6));
+  padding: var(--e1) var(--e4) var(--e3);
+  border-bottom: 4px solid var(--tinta);
+  border-radius: 0;
 }
 
-/* Rótulo de conserva portuguesa: lata retangular e baixa, moldura dupla, nome, preço e desenho */
+/* Rótulo de conserva portuguesa: lata retangular e baixa, moldura dupla, nome, preço e desenho.
+   Chapado como uma estampa: contorno de tinta e o filete interno, sem sombra borrada. */
 .rotulo {
   position: relative;
   flex: none;
   display: grid;
   grid-template-rows: auto 1fr auto auto;
   justify-items: start;
-  gap: 8px;
+  gap: var(--e1);
   width: min(78vw, 420px);
   aspect-ratio: 10 / 7;
-  padding: clamp(20px, 2.2vw, 32px);
-  border-radius: 18px;
-  box-shadow:
-    inset 0 0 0 2.5px rgb(75 38 43 / 0.4),
-    inset 0 -14px 24px -16px rgb(75 38 43 / 0.45),
-    0 20px 32px -20px rgb(75 38 43 / 0.6);
+  padding: var(--e4);
+  border-radius: var(--raio-2);
+  box-shadow: inset 0 0 0 var(--fio-forte) var(--tinta);
   rotate: calc(var(--inclina, 0deg) + (var(--i, 0) - 3) * 0.35deg);
   scroll-snap-align: center;
 }
@@ -1228,36 +1362,41 @@ html.js .prateleira[data-imersiva] .prateleira-dica .so-faixa {
 .rotulo::before {
   content: '';
   position: absolute;
-  inset: 9px;
-  border: 1.5px solid currentColor;
-  border-radius: 11px;
-  opacity: 0.45;
+  inset: 8px;
+  border: 1px solid currentColor;
+  border-radius: var(--raio-1);
+  opacity: 0.55;
   pointer-events: none;
 }
 
 .rotulo-desenho {
   width: clamp(88px, 9vw, 120px);
   height: auto;
-  opacity: 0.9;
 }
 
 .rotulo-nome {
   align-self: center;
-  font: 800 clamp(19px, 1.9vw, 25px) / 1.12 var(--f-slab), Georgia, serif;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: clamp(19px, 1.9vw, 25px);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
   text-wrap: balance;
 }
 
 .rotulo-preco {
-  font-size: clamp(19px, 1.9vw, 24px);
+  font-size: clamp(17px, 1.6vw, 20px);
   font-weight: 700;
+  line-height: 1;
 }
 
 .rotulo-tag {
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: var(--lh-etiqueta);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.85;
+  letter-spacing: 0.1em;
 }
 
 .prateleira-fecha {
@@ -1279,11 +1418,11 @@ html.js .prateleira[data-imersiva] .prateleira-dica .so-faixa {
 
 .fagulha {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 2.5px var(--marrom);
-  opacity: 0.35;
+  box-shadow: inset 0 0 0 2px var(--marrom);
+  opacity: 0.4;
 }
 
 .fagulha.f1 {
@@ -1325,7 +1464,7 @@ html.js .prateleira[data-imersiva] .prateleira-dica .so-faixa {
   width: 144px;
   height: 4px;
   border-radius: 999px;
-  background: rgb(110 63 69 / 0.25);
+  background: rgb(75 38 43 / 0.18);
   overflow: hidden;
 }
 
@@ -1333,7 +1472,7 @@ html.js .prateleira[data-imersiva] .prateleira-dica .so-faixa {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--marrom);
+  background: var(--tinta);
   transform-origin: 0 50%;
   transform: scaleX(var(--pp, 0));
 }
@@ -1417,7 +1556,7 @@ html.lata-3d-pronta .lata-palco {
 /* minmax(0, 1fr): a coluna do palco fica na largura da tela (o trilho max-content transborda à direita) */
 .prateleira-palco {
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(8px, 2svh, 24px);
+  gap: var(--e2);
   padding-top: calc(var(--topo) + 8px);
 }
 
@@ -1427,7 +1566,7 @@ html.lata-3d-pronta .lata-palco {
 }
 
 .prateleira .acompanha {
-  padding: clamp(18px, 2vw, 28px);
+  padding: var(--e4);
 }
 
 .prateleira .acompanha h3 {
@@ -1435,16 +1574,25 @@ html.lata-3d-pronta .lata-palco {
 }
 
 .prateleira .acompanha > p {
-  font-size: 15px;
+  font-size: 14px;
+  line-height: var(--lh-menor);
 }
 
 .prateleira .trios li {
-  padding: 10px 0;
-  font-size: clamp(15px, 1.3vw, 19px);
+  padding: 12px 0;
+  font-size: clamp(16px, 1.4vw, 20px);
 }
 
 .prateleira .prateleira-fecha .acoes {
-  margin-top: 16px;
+  margin-top: var(--e2);
+  gap: var(--e1);
+}
+
+/* Os dois botões cabem lado a lado sob o "Acompanha" (a chave de progresso fica livre embaixo) */
+.prateleira .prateleira-fecha .botao {
+  min-height: 48px;
+  padding: 0 var(--e3);
+  font-size: 14px;
 }
 
 .prateleira-fundo {
@@ -1456,9 +1604,10 @@ html.lata-3d-pronta .lata-palco {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   align-items: center;
-  gap: 56px;
+  gap: var(--e8);
+  /* A margem entra na largura (antes a caixa ficava 2 margens maior que a tela e cortava o texto) */
+  max-width: calc(var(--max) + 2 * var(--margem));
   padding-inline: var(--margem);
-  box-sizing: content-box;
 }
 
 .prateleira-cabeca .prateleira-abre {
@@ -1489,41 +1638,41 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .rotulo {
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 4px;
-  width: clamp(250px, min(22vw, 34svh), 340px);
-  padding: clamp(14px, 1.4vw, 22px);
+  width: clamp(256px, min(22vw, 34svh), 344px);
+  padding: var(--e3);
   transition:
     translate 0.5s var(--solta),
     scale 0.5s var(--solta),
     box-shadow 0.4s ease;
 }
 
+/* O cartão da vez (sob a lata 3D) sobe e ganha uma sombra dura de estampa, sem desfoque. */
 .rotulo[data-foco] {
-  translate: 0 -14px;
+  translate: 0 -16px;
   scale: 1.04;
   box-shadow:
-    inset 0 0 0 2.5px rgb(75 38 43 / 0.55),
-    inset 0 -14px 24px -16px rgb(75 38 43 / 0.45),
-    0 30px 40px -22px rgb(75 38 43 / 0.75);
+    inset 0 0 0 var(--fio-forte) var(--tinta),
+    0 8px 0 0 var(--tinta);
 }
 
 .rotulo-desenho {
-  width: clamp(52px, 4.4vw, 76px);
+  width: clamp(56px, 4.4vw, 72px);
   aspect-ratio: 3 / 2;
 }
 
 .rotulo-nome {
-  font-size: clamp(14px, 1.2vw, 19px);
+  font-size: clamp(16px, 1.4vw, 22px);
 }
 
 .rotulo-preco {
-  font-size: clamp(15px, 1.3vw, 19px);
+  font-size: clamp(15px, 1.2vw, 18px);
 }
 
 .rotulo-tag {
   max-width: 100%;
   overflow: hidden;
-  font-size: 10.5px;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 860px) {
@@ -1564,26 +1713,31 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .cardapio-intro {
-  margin-top: 24px;
-  max-width: 36ch;
-  font-size: clamp(20px, 1.9vw, 26px);
-  font-weight: 700;
-  line-height: 1.35;
+  margin-top: var(--e3);
+  max-width: 26em;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  line-height: var(--lh-lead);
 }
 
+/* Itens como nos stories: serifa pesada e condensada, preço na base à direita, fio entre um e outro. */
 .destaques {
-  margin-top: 40px;
-  border-top: 2px solid var(--marrom);
+  margin-top: var(--e6);
+  border-top: var(--fio-forte) solid currentColor;
 }
 
 .destaques li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 24px;
-  padding: 16px 0;
-  border-bottom: 2px solid var(--marrom);
-  font: 800 clamp(20px, 2.4vw, 30px) / 1.08 var(--f-slab), Georgia, serif;
+  gap: var(--e3);
+  padding: var(--e3) 0;
+  border-bottom: var(--fio) solid currentColor;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: var(--t-item);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -1607,8 +1761,8 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .fds-lado {
   display: grid;
   align-content: center;
-  gap: 16px;
-  padding: calc(var(--topo) + 32px) var(--margem) 104px;
+  gap: var(--e2);
+  padding: calc(var(--topo) + var(--e4)) var(--margem) var(--e12);
 }
 
 .fds-lado .t-gigante {
@@ -1616,9 +1770,9 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .fds-pais {
-  font: 700 18px/1 var(--f-maquina), monospace;
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
 }
 
 .fds-selo {
@@ -1627,18 +1781,28 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   top: 30%;
   display: grid;
   place-items: center;
-  width: clamp(152px, 18vw, 224px);
+  width: clamp(160px, 16vw, 224px);
   aspect-ratio: 1;
-  padding: 24px;
+  padding: var(--e3);
   border-radius: 50%;
   background: var(--creme);
-  box-shadow: var(--sombra);
+  box-shadow: var(--contorno);
   text-align: center;
   transform: translate(-50%, -50%) rotate(-8deg);
 }
 
+/* Filete interno do selo, como o carimbo de data num rótulo */
+.fds-selo::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--tinta);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
 .fds-selo .t-estencil {
-  font-size: clamp(20px, 2.2vw, 28px);
+  font-size: clamp(20px, 2vw, 28px);
 }
 
 @media (max-width: 720px) {
@@ -1648,7 +1812,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 
   .fds-lado {
     min-height: 50svh;
-    padding-block: 96px 64px;
+    padding-block: var(--e12) var(--e8);
   }
 
   .fds-selo {
@@ -1659,52 +1823,75 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 /* A chef */
 .chef-grade {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 56px;
-  align-items: start;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--e8);
+  align-items: end;
 }
 
+/* A frase da chef: aspas grandes no laranja, frase na serifa e a assinatura como etiqueta. */
 .citacao {
-  padding: 32px;
+  --titulo: var(--creme);
+  margin: 0;
+  padding: var(--e5) var(--e5) var(--e4);
   border-radius: var(--raio);
   background: var(--marrom);
   color: var(--creme);
 }
 
+.citacao::before {
+  content: '“';
+  display: block;
+  height: 48px;
+  margin-bottom: var(--e2);
+  font: 700 120px/1 var(--f-estencil), serif;
+  color: var(--laranja);
+}
+
 .citacao p {
-  font: 700 clamp(26px, 3vw, 40px) / 1.2 var(--f-maquina), monospace;
+  font: 600 clamp(28px, 2.8vw, 40px) / 1.15 var(--f-texto), Georgia, serif;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .citacao footer {
-  margin-top: 16px;
-  font: 400 17px/1.4 var(--f-maquina), monospace;
+  margin-top: var(--e3);
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 @media (max-width: 860px) {
   .chef-grade {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: var(--e5);
   }
 }
 
-/* Visite: painel de horários no papel pautado (como o destaque Horários) e endereço no rosa */
+/* Visite: o cartão de horários (como o destaque Horários) e o de endereço no rosa, chapados sobre o azul */
 .visite-grade {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 24px;
+  gap: var(--e3);
   align-items: stretch;
 }
 
+.titulo + .visite-grade {
+  margin-top: var(--e6);
+}
+
 .painel {
-  padding: 40px clamp(24px, 4vw, 48px);
+  padding: var(--e5) var(--e6);
   border-radius: var(--raio);
-  box-shadow: var(--sombra);
+}
+
+.painel .titulo {
+  font-size: clamp(32px, 3.6vw, 56px);
 }
 
 /* As linhas de horário assentam na pauta: cada linha ocupa uma pauta inteira e a régua do papel
    faz o papel de divisória (a pauta fica na própria lista, deslocada até a base das letras). */
 .horarios {
-  margin-top: 24px;
+  margin-top: var(--e3);
   background-position: 0 -11px;
 }
 
@@ -1713,7 +1900,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px 24px;
+  gap: 0 var(--e3);
   font-size: clamp(22px, 2.2vw, 31px);
   line-height: var(--pauta);
   min-height: var(--pauta);
@@ -1725,48 +1912,47 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   }
 }
 
-.horarios li[data-hoje] {
-  position: relative;
+/* Hoje: o dia ganha o marca-texto laranja do manifesto. Não ocupa largura, então a linha
+   nunca quebra e a pauta continua embaixo de cada horário. */
+.horarios li[data-hoje] > :first-child {
+  background: linear-gradient(transparent 58%, var(--laranja) 58% 88%, transparent 88%);
 }
 
-.horarios li[data-hoje]::before {
-  content: 'hoje';
-  position: absolute;
-  left: -12px;
-  top: 0;
-  translate: -55% 0;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--marrom);
-  color: var(--creme);
-  font: 700 12px/1.4 var(--f-maquina), monospace;
-  text-transform: uppercase;
-  transform: rotate(-6deg);
+@media (max-width: 720px) {
+  .painel {
+    padding: var(--e4) var(--e3);
+  }
+
+  .horarios li {
+    font-size: 20px;
+  }
 }
 
 .endereco {
   display: grid;
   align-content: center;
-  gap: 24px;
+  justify-items: center;
+  gap: var(--e4);
   text-align: center;
 }
 
 .endereco address {
-  font-size: clamp(28px, 3.2vw, 44px);
-  line-height: 1.2;
+  font-size: clamp(24px, 2.6vw, 36px);
+  line-height: 1.25;
+  text-wrap: balance;
 }
 
 .mapas {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: var(--e1);
 }
 
 .mapas .botao {
   min-height: 48px;
-  padding: 0 20px;
-  font-size: 16px;
+  padding: 0 var(--e3);
+  font-size: 14px;
 }
 
 @media (max-width: 860px) {
@@ -1780,7 +1966,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
    ========================================================================== */
 
 .topo-pagina {
-  padding: calc(var(--topo) + 40px) var(--margem) 56px;
+  padding: calc(var(--topo) + var(--e6)) var(--margem) var(--e8);
 }
 
 /* O piso acompanha telas estreitas: "Privacidade" (11 letras) precisa caber inteira num 360. */
@@ -1790,11 +1976,11 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 
 .chips {
   position: sticky;
-  top: 84px;
+  top: 72px;
   z-index: 40;
   display: flex;
-  gap: 8px;
-  padding: 8px var(--margem);
+  gap: var(--e1);
+  padding: var(--e1) var(--margem);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -1807,19 +1993,20 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   flex: none;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 18px;
+  height: 40px;
+  padding: 0 var(--e2);
   border-radius: 999px;
-  background: var(--vidro);
-  box-shadow: var(--sombra);
-  font: 700 16px/1 var(--f-estencil), serif;
-  text-transform: uppercase;
+  background: var(--creme);
+  color: var(--tinta);
+  box-shadow: var(--contorno);
+  font-size: 14px;
   text-decoration: none;
 }
 
 .chips .conta {
-  margin-left: 8px;
-  font-family: var(--f-maquina), monospace;
+  margin-left: var(--e1);
+  font: 700 12px/1 var(--f-maquina), monospace;
+  letter-spacing: 0;
 }
 
 .categoria {
@@ -1827,7 +2014,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .capa {
-  padding: 56px var(--margem) 32px;
+  padding: var(--e8) var(--margem) var(--e4);
   overflow: hidden;
 }
 
@@ -1836,32 +2023,37 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .capa p {
-  margin-top: 16px;
-  max-width: 40ch;
-  font-size: clamp(19px, 1.7vw, 23px);
-  font-weight: 700;
+  margin-top: var(--e3);
+  max-width: 26em;
+  font-size: var(--t-lead);
+  font-weight: 500;
+  line-height: var(--lh-lead);
 }
 
 .lista {
-  padding: 0 var(--margem) 72px;
+  padding: 0 var(--margem) var(--e10);
 }
 
 .lista .miolo > ul {
-  border-top: 2px solid var(--marrom);
+  border-top: var(--fio-forte) solid currentColor;
 }
 
 .item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 8px 24px;
-  padding: 16px 0;
-  border-bottom: 2px solid var(--marrom);
+  gap: var(--e1) var(--e3);
+  padding: var(--e3) 0;
+  border-bottom: var(--fio) solid currentColor;
 }
 
 .item-nome,
 .item-preco {
-  font: 800 clamp(20px, 2.3vw, 30px) / 1.1 var(--f-slab), Georgia, serif;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: var(--t-item);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -1869,16 +2061,18 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   white-space: nowrap;
 }
 
+/* Descrição na máquina de escrever, como nos stories de doces */
 .item-desc,
 .item-nota {
   grid-column: 1 / -1;
   max-width: 56ch;
-  font: 400 18px/1.5 var(--f-maquina), monospace;
+  font: 400 var(--t-menor) / var(--lh-menor) var(--f-maquina), monospace;
 }
 
 .acompanha {
-  margin-top: 32px;
-  padding: clamp(24px, 4vw, 40px);
+  --titulo: var(--creme);
+  margin-top: var(--e4);
+  padding: var(--e5);
   border-radius: var(--raio);
   background: var(--marrom);
   color: var(--creme);
@@ -1889,12 +2083,12 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .acompanha > p {
-  margin-top: 8px;
-  font: 400 18px/1.5 var(--f-maquina), monospace;
+  margin-top: var(--e1);
+  font: 400 var(--t-menor) / var(--lh-menor) var(--f-maquina), monospace;
 }
 
 .trios {
-  margin-top: 16px;
+  margin-top: var(--e2);
 }
 
 .trios li {
@@ -1902,44 +2096,56 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px 16px;
-  padding: 16px 0;
-  border-top: 1.5px solid rgb(245 233 209 / 0.35);
-  font: 800 clamp(19px, 2vw, 26px) / 1.15 var(--f-slab), Georgia, serif;
+  gap: var(--e1) var(--e2);
+  padding: var(--e2) 0;
+  border-top: 1px solid rgb(245 233 209 / 0.4);
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: clamp(19px, 2vw, 26px);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
 }
 
 .trios .t-maquina {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
+  font-stretch: 100%;
   text-transform: none;
 }
 
 .perguntas {
-  margin-top: 40px;
-  border-top: 2px solid var(--marrom);
+  margin-top: var(--e6);
+  border-top: var(--fio-forte) solid currentColor;
 }
 
 .perguntas li {
-  padding: 24px 0;
-  border-bottom: 2px solid var(--marrom);
+  padding: var(--e3) 0;
+  border-bottom: var(--fio) solid currentColor;
 }
 
 .pergunta {
-  font: 800 clamp(20px, 2.3vw, 28px) / 1.15 var(--f-slab), Georgia, serif;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
 }
 
-.resposta {
-  margin-top: 8px;
-  max-width: 60ch;
-  font-size: 18px;
-  line-height: 1.5;
+/* Respostas são texto corrido: na serifa de leitura, não na máquina de escrever. */
+.resposta,
+.resposta.t-maquina {
+  margin-top: var(--e1);
+  max-width: 34em;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: var(--t-corpo);
+  line-height: var(--lh-corpo);
 }
 
 .rodape-cardapio {
-  padding: 40px var(--margem) 120px;
-  font: 400 17px/1.6 var(--f-maquina), monospace;
+  padding: var(--e5) var(--margem) var(--e16);
+  font: 400 var(--t-menor) / var(--lh-menor) var(--f-maquina), monospace;
 }
 
 /* ==========================================================================
@@ -1949,55 +2155,71 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .rodape {
   position: relative;
   z-index: 1;
-  padding: 96px var(--margem) 128px;
+  padding: var(--e12) var(--margem) var(--e16);
   background-color: var(--creme);
-  border-top: 2px solid var(--marrom);
+  color: var(--tinta);
+  border-top: var(--fio-forte) solid var(--tinta);
 }
 
+/* Duas linhas carimbadas: entrelinha com folga para o til e a cedilha não encostarem. */
 .rodape .rodape-grito {
-  font-size: clamp(64px, 12.5vw, 196px);
-  line-height: 0.86;
+  font-size: clamp(64px, 12vw, 192px);
+  line-height: 0.96;
 }
 
 .rodape-grade {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 40px;
-  margin-top: 64px;
+  gap: var(--e5);
+  margin-top: var(--e8);
+  padding-top: var(--e4);
+  border-top: var(--fio) solid currentColor;
 }
 
 .rodape h2 {
-  font-size: 24px;
-  margin-bottom: 12px;
+  margin-bottom: var(--e2);
+  color: var(--marrom);
 }
 
 .rodape address,
 .rodape ul,
 .rodape p {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: var(--lh-corpo);
+}
+
+.rodape .link {
+  margin-top: var(--e1);
 }
 
 .rodape-base {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 24px;
-  margin-top: 64px;
-  padding-top: 24px;
-  border-top: 1.5px solid var(--linha);
-  font-size: 16px;
+  gap: 0 var(--e3);
+  margin-top: var(--e8);
+  padding-top: var(--e2);
+  border-top: 1px solid rgb(75 38 43 / 0.24);
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .rodape-base a {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 48px;
+  text-decoration: none;
+}
+
+.rodape-base a:hover {
+  text-decoration: underline;
 }
 
 .conceito {
   margin-left: auto;
-  opacity: 0.85;
+  font-weight: 400;
+  letter-spacing: 0.06em;
 }
 
 @media (max-width: 860px) {
@@ -2015,7 +2237,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
    ========================================================================== */
 
 .secao {
-  padding: 96px var(--margem);
+  padding: var(--secao) var(--margem);
 }
 
 /* Seções fora da tela nem são desenhadas (as páginas internas não usam sticky). */
@@ -2031,12 +2253,12 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: start;
-  gap: 48px;
+  gap: var(--e8);
 }
 
 .duas-colunas .texto + .texto,
 .chef-grade .texto + .texto {
-  margin-top: 24px;
+  margin-top: var(--e3);
 }
 
 .duas-colunas .t-gigante {
@@ -2061,9 +2283,9 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .secao-dupla .lado {
   display: grid;
   align-content: center;
-  gap: 16px;
+  gap: var(--e2);
   min-height: 72svh;
-  padding: 96px var(--margem);
+  padding: var(--e12) var(--margem);
 }
 
 .secao-dupla .t-gigante {
@@ -2076,25 +2298,25 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 
 .release {
   display: grid;
-  gap: 24px;
+  gap: var(--e3);
 }
 
 .fatos {
   display: grid;
-  margin-top: 32px;
-  padding: 16px clamp(20px, 4vw, 40px);
+  margin: var(--e4) 0 0;
+  border-top: var(--fio-forte) solid currentColor;
+}
+
+.fatos.painel {
+  border-top: 0;
 }
 
 .fatos div {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1.5px solid var(--linha);
-}
-
-.fatos div:last-child {
-  border-bottom: 0;
+  gap: var(--e2);
+  padding: var(--e2) 0;
+  border-bottom: var(--fio) solid currentColor;
 }
 
 .fatos dt {
@@ -2103,45 +2325,56 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 
 .fatos dd {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--t-menor);
+  line-height: var(--lh-menor);
 }
 
 .arquivos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 32px;
+  gap: var(--e2);
+  margin-top: var(--e4);
 }
 
 .arquivo {
   display: grid;
   align-content: space-between;
-  gap: 8px;
+  gap: var(--e1);
   min-height: 128px;
-  padding: 24px;
-  border-radius: var(--raio);
+  padding: var(--e3);
+  border-radius: var(--raio-2);
   background: var(--creme);
-  box-shadow: var(--sombra);
+  box-shadow: var(--contorno);
   text-decoration: none;
-  transition: transform 0.35s var(--mola);
+  transition:
+    transform 0.35s var(--mola),
+    box-shadow 0.2s;
 }
 
 .arquivo:hover {
-  transform: translateY(-3px) rotate(-1deg);
+  transform: translateY(-4px) rotate(-1deg);
+  box-shadow:
+    var(--contorno),
+    0 8px 0 0 var(--tinta);
 }
 
 .arquivo .t-slab {
-  font-size: 22px;
+  font-size: 24px;
+}
+
+.arquivo .t-maquina {
+  font-size: 14px;
 }
 
 .nota {
-  margin-top: 24px;
-  font-size: 17px;
+  margin-top: var(--e3);
+  font-size: var(--t-menor);
+  line-height: var(--lh-menor);
 }
 
 .materia {
   display: block;
-  margin-top: 6px;
+  margin-top: var(--e1);
   text-decoration: none;
 }
 
@@ -2156,7 +2389,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   }
 
   .secao {
-    padding-block: 72px;
+    padding-block: var(--e10);
   }
 
   .secao-dupla .lado {
@@ -2176,21 +2409,26 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
    ========================================================================== */
 
 .parede-sub {
-  margin-top: 8px;
+  margin-top: var(--e1);
   font-size: clamp(32px, 5vw, 64px);
 }
 
+.parede-sub + .texto,
+.topo-pagina .t-gigante + .texto {
+  margin-top: var(--e3);
+}
+
 .parede {
-  padding-bottom: 32px;
+  padding-bottom: var(--e4);
 }
 
 .parede-grade {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(42%, 200px), 1fr));
-  gap: 64px 32px;
+  gap: var(--e8) var(--e4);
   max-width: var(--max);
   margin-inline: auto;
-  padding: 80px var(--margem) 48px;
+  padding: var(--e10) var(--margem) var(--e6);
 }
 
 .cartao .parede-grade {
@@ -2198,9 +2436,10 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .parede-nota {
-  padding: 0 var(--margem) 64px;
+  padding: 0 var(--margem) var(--e8);
   text-align: center;
-  font-size: 17px;
+  font-size: var(--t-menor);
+  line-height: var(--lh-menor);
 }
 
 /* O giro de cada quadro vem do <li> (--rot); fora da grade, fica reto. */
@@ -2255,7 +2494,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   padding: 12px;
   border-radius: 4px;
   box-shadow:
-    0 20px 32px -18px rgb(75 38 43 / 0.75),
+    0 16px 24px -16px rgb(75 38 43 / 0.6),
     inset 0 0 0 1px rgb(0 0 0 / 0.15);
 }
 
@@ -2280,7 +2519,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   place-items: center;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  padding: 12%;
+  padding: var(--e3);
   box-shadow: inset 0 2px 8px rgb(0 0 0 / 0.28);
 }
 
@@ -2304,7 +2543,12 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .quadro-nome {
-  font: 700 clamp(18px, 1.8vw, 22px) / 1.05 var(--f-estencil), serif;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: clamp(18px, 1.6vw, 22px);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
@@ -2361,12 +2605,14 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .ficha {
   width: min(92vw, 520px);
   max-height: 92svh;
-  padding: 32px;
+  padding: var(--e4);
   border: 0;
   border-radius: var(--raio);
   background: var(--creme);
-  color: var(--marrom);
-  box-shadow: 0 40px 80px -24px rgb(75 38 43 / 0.7);
+  color: var(--tinta);
+  box-shadow:
+    var(--contorno),
+    0 32px 64px -32px rgb(75 38 43 / 0.6);
 }
 
 .ficha::backdrop {
@@ -2378,73 +2624,86 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .ficha-miolo {
   display: grid;
   justify-items: center;
-  gap: 16px;
+  gap: var(--e2);
   text-align: center;
 }
 
 .ficha-tag {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 var(--e2);
   border-radius: 999px;
-  background: var(--marrom);
+  background: var(--tinta);
   color: var(--creme);
-  font-size: 14px;
+  font-size: var(--t-etiqueta);
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .ficha-quadro {
-  width: min(70%, 260px);
-  margin-top: 24px;
+  width: min(70%, 256px);
+  margin-top: var(--e3);
   cursor: default;
 }
 
 .ficha-frase {
   font-size: 20px;
+  line-height: var(--lh-lead);
 }
 
 /* Formulário de envio */
 .envio-secao {
-  padding: 96px var(--margem) 120px;
+  padding: var(--secao) var(--margem) var(--e16);
 }
 
 .envio {
-  margin-top: 32px;
+  margin-top: var(--e4);
 }
 
 .envio-aviso {
-  margin-bottom: 24px;
-  padding: 12px 16px;
-  border-radius: 12px;
+  margin-bottom: var(--e3);
+  padding: 12px var(--e2);
+  border-radius: var(--raio-1);
   background: var(--rosa);
-  font-size: 16px;
+  box-shadow: inset 0 0 0 1px var(--tinta);
+  font-size: var(--t-menor);
   font-weight: 700;
+  line-height: var(--lh-menor);
 }
 
 .envio-grade {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   align-items: start;
-  gap: 56px;
+  gap: var(--e8);
 }
 
 .envio-campos {
   display: grid;
-  gap: 24px;
+  gap: var(--e4);
 }
 
 .foto-alvo {
   display: grid;
   place-items: center;
-  gap: 8px;
-  padding: 32px 24px;
-  border: 3px dashed var(--marrom);
-  border-radius: var(--raio);
-  background: rgb(255 255 255 / 0.3);
+  gap: var(--e1);
+  padding: var(--e5) var(--e3);
+  border: var(--fio-forte) dashed var(--tinta);
+  border-radius: var(--raio-2);
+  background: transparent;
   text-align: center;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.foto-alvo:hover {
+  background: rgb(75 38 43 / 0.05);
 }
 
 .foto-alvo:focus-within {
-  outline: 3px solid var(--marrom);
+  outline: 3px solid var(--tinta);
   outline-offset: 3px;
 }
 
@@ -2453,28 +2712,31 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .foto-alvo .t-maquina {
-  font-size: 16px;
+  font-size: var(--t-menor);
+  line-height: var(--lh-menor);
 }
 
 .campo {
   display: grid;
-  gap: 6px;
+  gap: var(--e1);
 }
 
 .campo > span {
-  font-size: 18px;
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .campo input {
   width: 100%;
-  min-height: 48px;
-  padding: 8px 0;
+  height: 48px;
+  padding: 0;
   border: 0;
-  border-bottom: 2px solid var(--marrom);
+  border-bottom: var(--fio-forte) solid var(--tinta);
   border-radius: 0;
   background: transparent;
-  color: var(--marrom);
-  font: 400 20px/1.3 var(--f-maquina), monospace;
+  color: var(--tinta);
+  font: 400 20px/1 var(--f-maquina), monospace;
 }
 
 .campo input:focus {
@@ -2483,22 +2745,23 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .campo input::placeholder {
-  color: rgb(110 63 69 / 0.6);
+  color: rgb(75 38 43 / 0.55);
 }
 
 .aceite {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  font: 400 17px/1.5 var(--f-maquina), monospace;
+  font-size: var(--t-menor);
+  line-height: var(--lh-menor);
 }
 
 .aceite input {
   flex: none;
   width: 24px;
   height: 24px;
-  margin-top: 2px;
-  accent-color: var(--marrom);
+  margin: 0;
+  accent-color: var(--tinta);
 }
 
 .isca {
@@ -2511,7 +2774,7 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 
 .envio-msg {
   min-height: 24px;
-  font: 700 16px/1.4 var(--f-maquina), monospace;
+  font: 700 var(--t-menor) / var(--lh-menor) var(--f-maquina), monospace;
 }
 
 .botao:disabled {
@@ -2583,11 +2846,11 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .mod-cartao {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
-  gap: 16px;
-  padding: 16px;
-  border-radius: var(--raio);
-  background: rgb(255 255 255 / 0.45);
-  box-shadow: var(--sombra);
+  gap: var(--e2);
+  padding: var(--e2);
+  border-radius: var(--raio-2);
+  background: var(--creme);
+  box-shadow: var(--contorno);
 }
 
 .mod-cartao img {
@@ -2626,9 +2889,9 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 }
 
 .lab-caso {
-  padding: 32px;
+  padding: var(--e4);
   border-radius: var(--raio);
-  box-shadow: var(--sombra);
+  box-shadow: var(--contorno);
 }
 
 .lab-caso header {
@@ -2784,29 +3047,32 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   left: 50%;
   bottom: 0;
   translate: -50%;
-  font-size: 14px;
-  font-weight: 700;
+  font: 700 var(--t-etiqueta) / var(--lh-etiqueta) var(--f-maquina), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.12em;
   pointer-events: none;
 }
 
 .vitrine-painel {
   display: grid;
   justify-items: start;
-  gap: 16px;
-  background: var(--creme);
-  box-shadow: 0 0 0 16px var(--creme);
+  gap: var(--e2);
 }
 
 .vitrine-num {
-  font-size: 15px;
+  font-size: var(--t-etiqueta);
   font-weight: 700;
+  line-height: var(--lh-etiqueta);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .vitrine-nome {
-  font: 800 clamp(24px, 2.6vw, 36px) / 1.1 var(--f-slab), Georgia, serif;
+  font-family: var(--f-texto), Georgia, serif;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 900;
+  font-stretch: var(--item-largura);
+  line-height: 1;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -2819,23 +3085,24 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
 .vitrine-latas {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--e1);
+  margin-top: var(--e1);
 }
 
 .vitrine-lata {
-  min-height: 44px;
-  padding: 0 16px;
+  height: 40px;
+  padding: 0 var(--e2);
   border: 0;
   border-radius: 999px;
-  box-shadow: inset 0 0 0 2px var(--marrom);
-  font: 700 15px/1 var(--f-maquina), monospace;
-  text-transform: uppercase;
+  background: transparent;
+  color: var(--tinta);
+  box-shadow: inset 0 0 0 var(--fio) var(--tinta);
+  font-size: 14px;
   cursor: pointer;
 }
 
 .vitrine-lata[aria-pressed='true'] {
-  background: var(--marrom);
+  background: var(--tinta);
   color: var(--creme);
 }
 
@@ -2843,5 +3110,41 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
   .vitrine {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+}
+
+/* ==========================================================================
+   Degraus da régua: espaços internos que diminuem por faixa de tela (sempre múltiplos de 8)
+   ========================================================================== */
+@media (max-width: 1080px) {
+  :root {
+    --prateleira-gap: var(--e4);
+  }
+
+  .rotulo {
+    padding: var(--e2);
+  }
+
+  .painel {
+    padding: var(--e5) var(--e4);
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --prateleira-gap: var(--e3);
+  }
+
+  .prateleira-latas {
+    padding-inline: var(--e2);
+  }
+
+  .acompanha,
+  .citacao {
+    padding: var(--e4) var(--e3);
+  }
+
+  .painel {
+    padding: var(--e4) var(--e3);
   }
 }

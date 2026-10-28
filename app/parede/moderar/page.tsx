@@ -43,7 +43,7 @@ export default async function Moderar({ searchParams }: { searchParams: Promise<
 
   if (!(await autorizado())) {
     return (
-      <section className="topo-pagina c-creme pautado moderar">
+      <section className="topo-pagina c-creme moderar">
         <div className="miolo">
           <h1 className="t-estencil titulo">Moderação da Parede</h1>
           <form action={entrar} className="moderar-entrar">
@@ -66,7 +66,7 @@ export default async function Moderar({ searchParams }: { searchParams: Promise<
   const { pendentes: fila, aprovados: naParede } = await listaDaParede('gravar');
 
   return (
-    <section className="topo-pagina c-creme pautado moderar">
+    <section className="topo-pagina c-creme moderar">
       <div className="miolo">
         <div className="mod-topo">
           <h1 className="t-estencil titulo">Moderação da Parede</h1>

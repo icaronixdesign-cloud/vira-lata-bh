@@ -77,7 +77,15 @@ export function Letras({
   const partes = texto.split(/(\s+)/).filter(Boolean);
 
   return (
-    <Tag className={classes} data-gesto={gesto} data-farejar={farejar ? '' : undefined} style={estilo} id={id}>
+    // suppressHydrationWarning: o script inline do layout marca data-in na primeira dobra antes da hidratação.
+    <Tag
+      className={classes}
+      data-gesto={gesto}
+      data-farejar={farejar ? '' : undefined}
+      style={estilo}
+      id={id}
+      suppressHydrationWarning
+    >
       <span className="sr">{texto}</span>
       <span className="v" aria-hidden="true">
         {partes.map((parte, k) =>

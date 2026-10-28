@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Anton, Courier_Prime, Roboto_Slab, Stardos_Stencil } from 'next/font/google';
+import { Anton, Courier_Prime, Stardos_Stencil } from 'next/font/google';
+import localFont from 'next/font/local';
 import { BarraInferior } from '@/components/BarraInferior';
 import { Cabecalho } from '@/components/Cabecalho';
 import { CachorroDefs } from '@/components/Cachorro';
@@ -8,12 +9,22 @@ import { Rodape } from '@/components/Rodape';
 import { MODO, SITE } from '@/content/site';
 import './globals.css';
 
-// Fontes provisórias até os arquivos da marca: estêncil (títulos), slab (itens), máquina de escrever (detalhes)
-// e uma condensada pesada para as palavras gigantes carimbadas.
-// O site só usa a estêncil em 700 (o peso 400 saiu do pacote). A Anton fica no preload porque é o
-// LCP das páginas internas (a palavra gigante do topo); sem ela o /cardapio perde ~10 pontos de LCP.
+// Fontes provisórias até os arquivos da marca, cada uma com um papel só (como nos stories da casa):
+// estêncil (títulos), serifa variável (texto corrido e, pesada e condensada, os itens do cardápio e a
+// interface), máquina de escrever (etiquetas, preços e detalhes) e a condensada carimbada (palavras gigantes).
+// A serifa usa o eixo de largura (wdth): a mesma família vai do texto (100%) ao item do cardápio (62%).
+// É a Roboto Serif (OFL) com os eixos cortados para a faixa usada (scripts/fonte-texto.mjs): 75 KB em vez de 147 KB.
+// O site só usa a estêncil em 700. A Anton fica no preload porque é o LCP das páginas internas.
 const estencil = Stardos_Stencil({ subsets: ['latin'], weight: '700', variable: '--f-estencil', display: 'swap' });
-const slab = Roboto_Slab({ subsets: ['latin'], variable: '--f-slab', display: 'swap' });
+const texto = localFont({
+  src: './fontes/roboto-serif-vira-lata.woff2',
+  weight: '400 900',
+  declarations: [{ prop: 'font-stretch', value: '62% 100%' }],
+  variable: '--f-texto',
+  display: 'swap',
+  fallback: ['Georgia', 'serif'],
+  adjustFontFallback: 'Times New Roman',
+});
 const maquina = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--f-maquina', display: 'swap' });
 const carimbo = Anton({ subsets: ['latin'], weight: '400', variable: '--f-carimbo', display: 'swap' });
 
@@ -66,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="pt-BR"
-      className={`${estencil.variable} ${slab.variable} ${maquina.variable} ${carimbo.variable}`}
+      className={`${estencil.variable} ${texto.variable} ${maquina.variable} ${carimbo.variable}`}
       suppressHydrationWarning
     >
       <head>

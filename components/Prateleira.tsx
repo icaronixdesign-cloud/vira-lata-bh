@@ -273,7 +273,7 @@ export function Prateleira() {
   const latas = CARDAPIO.find((c) => c.id === 'latas')!;
   return (
     <section ref={pista} className="prateleira" aria-labelledby="prateleira-titulo">
-      <div ref={palco} className="prateleira-palco c-creme pautado">
+      <div ref={palco} className="prateleira-palco c-creme">
         {/* A palavra-fantasma vem do CSS (content), para não existir nó de texto quase invisível. */}
         <p ref={fundo} className="prateleira-fundo t-gigante" aria-hidden="true" />
         <div ref={cabeca} className="prateleira-cabeca miolo">
@@ -300,7 +300,7 @@ export function Prateleira() {
                 </svg>
                 <Letras como="h3" className="rotulo-nome" texto={item.nome} gesto="sacudir" preguicoso />
                 <p className="rotulo-preco t-maquina colchete">{reais(item.preco)}</p>
-                <p className="rotulo-tag t-maquina">Lata nº {i + 1} · Vira-lata · Lourdes, BH</p>
+                <p className="rotulo-tag t-maquina">Lata nº {i + 1} · Lourdes, BH</p>
               </li>
             ))}
           </ul>

@@ -36,7 +36,7 @@ export function ParedeGaleria({ quadros }: { quadros: Quadro[] }) {
 
   return (
     <>
-      <ul className="parede-grade" data-gesto="quadros">
+      <ul className="parede-grade" data-gesto="quadros" suppressHydrationWarning>
         {quadros.map((q, i) => (
           <li key={q.id} style={{ '--i': i, '--rot': `${GIRO[i % GIRO.length]}deg` } as CSSProperties}>
             <button

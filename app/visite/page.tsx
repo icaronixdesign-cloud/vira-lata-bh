@@ -21,7 +21,7 @@ const PERGUNTAS = [
 export default function Visite() {
   return (
     <>
-      <header className="topo-pagina c-azul pautado">
+      <header className="topo-pagina c-azul">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Visite" gesto="carimbar" passo={60} />
           <div className="acoes">
@@ -32,7 +32,7 @@ export default function Visite() {
 
       <section className="lista c-azul" aria-label="Endereço e horários">
         <div className="miolo visite-grade">
-          <div className="painel c-rosa pautado endereco">
+          <div className="painel c-rosa endereco">
             <Letras
               como="address"
               className="t-maquina"
@@ -58,14 +58,14 @@ export default function Visite() {
         </div>
       </section>
 
-      <section className="topo-pagina c-creme pautado" aria-labelledby="perguntas-titulo">
+      <section className="topo-pagina c-creme" aria-labelledby="perguntas-titulo">
         <div className="miolo">
           <Letras como="h2" id="perguntas-titulo" className="t-estencil titulo" texto="Perguntas" gesto="rolar" farejar />
           <ul className="perguntas">
             {PERGUNTAS.map((q) => (
               <li key={q.p}>
                 <Letras como="h3" className="pergunta" texto={q.p} gesto="sacudir" preguicoso />
-                <Letras como="p" className="resposta t-maquina" texto={q.r} gesto="datilografar" preguicoso />
+                <Letras como="p" className="resposta" texto={q.r} gesto="datilografar" preguicoso />
               </li>
             ))}
           </ul>

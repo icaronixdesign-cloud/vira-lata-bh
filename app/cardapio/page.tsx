@@ -12,7 +12,7 @@ const CAPA = { creme: 'c-creme', laranja: 'c-laranja', rosa: 'c-rosa' } as const
 export default function Cardapio() {
   return (
     <>
-      <header className="topo-pagina c-laranja pautado">
+      <header className="topo-pagina c-laranja">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Cardápio" gesto="carimbar" passo={45} />
           <Letras
@@ -37,7 +37,7 @@ export default function Cardapio() {
 
       {CARDAPIO.map((c) => (
         <section key={c.id} id={c.id} className={`categoria ${CAPA[c.cor]}`} aria-labelledby={`titulo-${c.id}`}>
-          <div className="capa pautado">
+          <div className="capa">
             <div className="miolo">
               <Letras como="h2" id={`titulo-${c.id}`} className="t-gigante carimbo" texto={c.titulo} gesto="carimbar" />
               <Letras como="p" texto={c.intro} gesto="pular" preguicoso />

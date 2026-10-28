@@ -4,7 +4,7 @@ import { Letras } from '@/components/Letras';
 
 export default function NaoEncontrada() {
   return (
-    <section className="sumiu c-laranja pautado">
+    <section className="sumiu c-laranja">
       <div>
         <Cachorro olhar className="sumiu-cachorro" />
         <Letras como="h1" className="t-estencil titulo" texto="Essa página fugiu de casa" gesto="pular" farejar />

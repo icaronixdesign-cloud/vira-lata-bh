@@ -50,7 +50,7 @@ const MATERIAS = [
 export default function Imprensa() {
   return (
     <>
-      <header className="topo-pagina c-creme pautado">
+      <header className="topo-pagina c-creme">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Imprensa" gesto="carimbar" passo={45} />
           <Letras como="p" className="cardapio-intro" texto="Tudo o que você precisa para escrever sobre o Vira-lata." gesto="pular" atraso={600} passo={14} />
@@ -68,7 +68,7 @@ export default function Imprensa() {
         </div>
       </section>
 
-      <section className="secao c-azul pautado" aria-labelledby="fatos-titulo">
+      <section className="secao c-azul" aria-labelledby="fatos-titulo">
         <div className="miolo">
           <Letras como="h2" id="fatos-titulo" className="t-estencil titulo" texto="Fatos rápidos" gesto="rolar" farejar />
           <dl className="fatos painel c-creme">
@@ -82,7 +82,7 @@ export default function Imprensa() {
         </div>
       </section>
 
-      <section className="secao c-rosa pautado" aria-labelledby="material-titulo">
+      <section className="secao c-rosa" aria-labelledby="material-titulo">
         <div className="miolo">
           <Letras como="h2" id="material-titulo" className="t-estencil titulo" texto="Para baixar" gesto="rolar" farejar />
           <ul className="arquivos">
@@ -99,7 +99,7 @@ export default function Imprensa() {
         </div>
       </section>
 
-      <section className="secao c-creme pautado" aria-labelledby="materias-titulo">
+      <section className="secao c-creme" aria-labelledby="materias-titulo">
         <div className="miolo">
           <Letras como="h2" id="materias-titulo" className="t-estencil titulo" texto="Na imprensa" gesto="rolar" farejar />
           <ul className="perguntas">

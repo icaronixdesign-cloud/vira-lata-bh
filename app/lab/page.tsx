@@ -7,17 +7,17 @@ import { Selo } from '@/components/Selo';
 export const metadata: Metadata = { title: 'Laboratório de gestos', robots: { index: false, follow: false } };
 
 const CASOS: { gesto: Gesto; onde: string; texto: string; classe: string; fundo: string; farejar?: boolean }[] = [
-  { gesto: 'rolar', onde: 'Selo, títulos em estêncil', texto: 'Terça à quinta 18h—0h', classe: 't-estencil', fundo: 'c-creme pautado', farejar: true },
-  { gesto: 'pular', onde: 'Manifesto, frases, chamadas', texto: 'O seu mais novo bar de estimação', classe: 't-estencil', fundo: 'c-azul pautado', farejar: true },
-  { gesto: 'carimbar', onde: 'Palavras gigantes', texto: 'Petiscos', classe: 't-gigante carimbo', fundo: 'c-laranja pautado' },
-  { gesto: 'datilografar', onde: 'Endereço, descrições, etiquetas', texto: 'R. Bárbara Heliodora 【141】 Lourdes · Beagá', classe: 't-maquina', fundo: 'c-rosa pautado' },
-  { gesto: 'sacudir', onde: 'Itens do cardápio', texto: 'Sardinha c/ molho de tomate e pimentão', classe: 't-slab', fundo: 'c-creme pautado' },
+  { gesto: 'rolar', onde: 'Selo, títulos em estêncil', texto: 'Terça à quinta 18h—0h', classe: 't-estencil', fundo: 'c-creme', farejar: true },
+  { gesto: 'pular', onde: 'Manifesto, frases, chamadas', texto: 'O seu mais novo bar de estimação', classe: 't-estencil', fundo: 'c-azul', farejar: true },
+  { gesto: 'carimbar', onde: 'Palavras gigantes', texto: 'Petiscos', classe: 't-gigante carimbo', fundo: 'c-laranja' },
+  { gesto: 'datilografar', onde: 'Endereço, descrições, etiquetas', texto: 'R. Bárbara Heliodora 【141】 Lourdes · Beagá', classe: 't-maquina', fundo: 'c-rosa' },
+  { gesto: 'sacudir', onde: 'Itens do cardápio', texto: 'Sardinha c/ molho de tomate e pimentão', classe: 't-slab', fundo: 'c-creme' },
 ];
 
 export default function Lab() {
   return (
     <>
-      <header className="topo-pagina c-creme pautado">
+      <header className="topo-pagina c-creme">
         <div className="miolo">
           <Letras como="h1" className="t-gigante carimbo" texto="Gestos" gesto="carimbar" />
           <p className="texto" style={{ marginTop: 16 }}>
@@ -44,7 +44,7 @@ export default function Lab() {
             <Letras como="p" className={`amostra ${c.classe}`} texto={c.texto} gesto={c.gesto} farejar={c.farejar} />
           </section>
         ))}
-        <section id="caso-sair" className="lab-caso c-creme pautado">
+        <section id="caso-sair" className="lab-caso c-creme">
           <header>
             <span>sair da lata · as letras pulam quando a tampa abre</span>
             <DeNovo alvo="caso-sair" />

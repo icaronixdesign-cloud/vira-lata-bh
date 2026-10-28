@@ -78,7 +78,7 @@ export default async function Inicio() {
         </div>
       </section>
 
-      {/* 2. Manifesto: cada frase pula numa linha do pautado */}
+      {/* 2. Manifesto: cada frase pula numa linha do */}
       <section className="cartao c-creme manifesto" aria-labelledby="manifesto-titulo">
         <div className="miolo">
           <Letras como="h2" id="manifesto-titulo" className="t-estencil titulo" texto="Adote um bar" gesto="rolar" farejar />
@@ -101,7 +101,7 @@ export default async function Inicio() {
       </section>
 
       {/* 3. A lata: a lata 3D chega fechada e o scroll a abre enquanto a seção fica parada (LataCena) */}
-      <section id="lata-sec" className="cartao c-creme pautado lata-sec" aria-labelledby="lata-titulo">
+      <section id="lata-sec" className="cartao c-creme lata-sec" aria-labelledby="lata-titulo">
         <div className="miolo lata-grade">
           <div>
             <Letras como="h2" id="lata-titulo" className="t-estencil titulo" texto="Tudo cabe numa lata" gesto="rolar" farejar />
@@ -140,7 +140,7 @@ export default async function Inicio() {
       {CARTOES.map((c) => {
         const categoria = CARDAPIO.find((x) => x.id === c.id)!;
         return (
-          <section key={c.id} className={`cartao ${c.cor} pautado cardapio-cartao`} aria-labelledby={`cartao-${c.id}`}>
+          <section key={c.id} className={`cartao ${c.cor} cardapio-cartao`} aria-labelledby={`cartao-${c.id}`}>
             <div className="miolo">
               <Letras como="h2" id={`cartao-${c.id}`} className="t-gigante carimbo" texto={categoria.titulo} gesto="carimbar" />
               <Letras como="p" className="cardapio-intro" texto={categoria.intro} gesto="pular" preguicoso />
@@ -169,7 +169,7 @@ export default async function Inicio() {
         </h2>
         <div className="fds-grade">
           {FIM_DE_SEMANA.pratos.map((prato, k) => (
-            <div key={prato.nome} className={`fds-lado pautado ${k === 0 ? 'c-azul' : 'c-laranja'}`}>
+            <div key={prato.nome} className={`fds-lado ${k === 0 ? 'c-azul' : 'c-laranja'}`}>
               <Letras como="p" className="fds-pais" texto={prato.lado} gesto="datilografar" />
               <Letras como="h3" className="t-gigante carimbo" texto={prato.nome} gesto="carimbar" atraso={k * 300} />
             </div>
@@ -181,7 +181,7 @@ export default async function Inicio() {
       </section>
 
       {/* 6. Parede de estimação */}
-      <section className="cartao c-creme pautado" aria-labelledby="parede-titulo">
+      <section className="cartao c-creme" aria-labelledby="parede-titulo">
         <div className="miolo">
           <Letras como="h2" id="parede-titulo" className="t-estencil titulo" texto="Parede de estimação" gesto="rolar" farejar />
           <Letras
@@ -204,7 +204,7 @@ export default async function Inicio() {
       </section>
 
       {/* 7. A chef */}
-      <section className="cartao c-creme pautado" aria-labelledby="chef-titulo">
+      <section className="cartao c-creme" aria-labelledby="chef-titulo">
         <div className="miolo chef-grade">
           <div>
             <Letras como="h2" id="chef-titulo" className="t-estencil titulo" texto="Quem comanda" gesto="rolar" farejar />
@@ -223,16 +223,16 @@ export default async function Inicio() {
         </div>
       </section>
 
-      {/* 7. Visite: horários no pautado e endereço no rosa, como os destaques */}
+      {/* 7. Visite: horários no e endereço no rosa, como os destaques */}
       <section className="cartao c-azul" aria-labelledby="visite-titulo">
         <div className="miolo">
           <Letras como="h2" id="visite-titulo" className="t-estencil titulo" texto="Vem pro bar" gesto="rolar" farejar />
-          <div className="visite-grade" style={{ marginTop: 32 }}>
+          <div className="visite-grade">
             <div className="painel c-creme">
               <Letras como="h3" className="t-estencil titulo" texto="Horários" gesto="rolar" />
               <Horarios />
             </div>
-            <div className="painel c-rosa pautado endereco">
+            <div className="painel c-rosa endereco">
               <Letras
                 como="address"
                 className="t-maquina"
