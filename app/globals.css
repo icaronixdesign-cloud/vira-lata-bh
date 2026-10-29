@@ -12,7 +12,7 @@
   --marrom: #6e3f45; /* tinta da marca: selo, cachorro, títulos, palavras gigantes */
   --tinta: #4b262b; /* texto corrido, miúdo e fios: AA em todos os fundos da casa */
   --laranja: #f5881f;
-  --azul: #00a4fe;
+  --azul: #6cc2ee; /* azul da casa, clareado e menos saturado (era #00a4fe): mais leve aos olhos, contraste maior */
   --creme: #f5e9d1;
   --rosa: #f5bbb0;
   --metal: #cfcac0;
@@ -522,31 +522,31 @@ button {
     opacity: 0;
   }
 
-  .letras[data-in] .l {
+  .letras[data-in]:not([data-assentou]) .l {
     animation-duration: var(--dur);
     animation-timing-function: var(--curva);
     animation-fill-mode: backwards;
     animation-delay: calc(var(--d0, 0ms) + var(--i) * var(--passo));
   }
 
-  .letras[data-gesto='rolar'][data-in] .l {
+  .letras[data-gesto='rolar'][data-in]:not([data-assentou]) .l {
     animation-name: rolar;
   }
 
-  .letras[data-gesto='pular'][data-in] .l {
+  .letras[data-gesto='pular'][data-in]:not([data-assentou]) .l {
     animation-name: pular;
     transform-origin: 50% 100%;
   }
 
-  .letras[data-gesto='carimbar'][data-in] .l {
+  .letras[data-gesto='carimbar'][data-in]:not([data-assentou]) .l {
     animation-name: carimbar;
   }
 
-  .letras[data-gesto='datilografar'][data-in] .l {
+  .letras[data-gesto='datilografar'][data-in]:not([data-assentou]) .l {
     animation-name: datilografar;
   }
 
-  .letras[data-gesto='sacudir'][data-in] .l {
+  .letras[data-gesto='sacudir'][data-in]:not([data-assentou]) .l {
     animation-name: sacudir;
   }
 
@@ -555,7 +555,7 @@ button {
     opacity: 0;
   }
 
-  [data-abrir][data-aberta] .letras[data-gesto='sair'][data-in] .l {
+  [data-abrir][data-aberta] .letras[data-gesto='sair'][data-in]:not([data-assentou]) .l {
     animation-name: sair;
   }
 }
@@ -935,6 +935,15 @@ button {
 @media (max-width: 400px) {
   .marca-nome {
     display: none;
+  }
+
+  /* "Fechado · abre hoje às 18h" cabe em 360 px ao lado do selo */
+  .cabecalho .status {
+    min-width: 0;
+    padding: 0 var(--e2);
+    letter-spacing: 0.04em;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -1696,8 +1705,26 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
     order: 0;
   }
 
+  /* Numa coluna, a vaga da lata vem antes do título: a lata 3D desce da seção anterior e pousa no topo
+     do cartão que sobe, sem atravessar o texto (com a vaga embaixo, o texto cruzava a lata no trajeto). */
+  .prateleira-cabeca .lata-vaga {
+    order: -1;
+  }
+
+  /* Na faixa de arrastar, os cartões alinham pelo topo (centrados no "Acompanha" sobrava um vão de 128 px) */
+  .prateleira:not([data-imersiva]) .prateleira-trilho {
+    align-items: flex-start;
+  }
+
   .rotulo {
     width: min(78vw, 360px);
+  }
+}
+
+@media (max-width: 720px) {
+  /* Lata, título e cartões cabem juntos numa tela de celular: a lata 3D segue à vista enquanto se arrasta */
+  .prateleira .lata-vaga {
+    width: min(76%, 320px);
   }
 }
 

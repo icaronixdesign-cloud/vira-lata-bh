@@ -58,16 +58,22 @@ function junta(el: HTMLElement) {
   el.querySelector(':scope > .sr')?.remove();
 }
 
-/** Junta quando a última letra assenta (ou num prazo de segurança). `abanar` e `farejar` ficam divididos. */
+/**
+ * Junta quando a última letra assenta (ou num prazo de segurança). `abanar` e `farejar` ficam divididos
+ * (precisam das letras no hover) e ganham `data-assentou`: a animação de entrada sai do CSS e o fim do hover
+ * não a reinicia (antes as letras do botão sumiam por até 2 s ao tirar o mouse).
+ */
 function agendaJunta(el: HTMLElement) {
-  if (el.dataset.junto !== undefined || el.hasAttribute('data-farejar') || el.closest('.abanar')) return;
+  if (el.dataset.junto !== undefined || el.hasAttribute('data-assentou')) return;
+  const fica = el.hasAttribute('data-farejar') || !!el.closest('.abanar');
   const letras = el.querySelectorAll('.l').length;
   if (!letras) return;
   let restantes = letras;
   const fim = () => {
     el.removeEventListener('animationend', aoFim);
     window.clearTimeout(prazo);
-    junta(el);
+    if (fica) el.setAttribute('data-assentou', '');
+    else junta(el);
   };
   const aoFim = (e: AnimationEvent) => {
     if ((e.target as HTMLElement).classList.contains('l') && --restantes <= 0) fim();
@@ -177,6 +183,7 @@ export function Interacoes() {
       const latas = caso.querySelectorAll<HTMLElement>('[data-abrir]');
       gestos.forEach((el) => {
         el.removeAttribute('data-in');
+        el.removeAttribute('data-assentou');
         if (!reduz.matches) {
           junta(el);
           divide(el);
