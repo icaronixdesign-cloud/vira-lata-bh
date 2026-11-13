@@ -2617,14 +2617,16 @@ html.js .prateleira[data-imersiva] :is(.prateleira-trilho, .prateleira-fundo, .p
     animation-delay: calc(var(--i, 0) * 80ms);
   }
 
-  .quadro:active {
-    animation: balanca 1.1s var(--solta) !important;
+  /* Depois da queda a animação de entrada sai de cena: trocar de animação nunca a reinicia
+     (antes, ao tirar o mouse, o quadro voltava a cair do alto da tela). */
+  .parede-grade[data-in] .quadro[data-caiu] {
+    animation: none;
   }
-}
 
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .quadro:hover {
-    animation: balanca 1.1s var(--solta) !important;
+  /* O balanço (hover ou toque) vai até o fim e assenta sozinho, mesmo se o mouse sair no meio:
+     o quadro só oscila para os lados e para no lugar. Quem liga e desliga é o ParedeGaleria. */
+  .parede-grade[data-in] .quadro[data-caiu][data-balanca] {
+    animation: balanca 1.1s var(--solta);
   }
 }
 
