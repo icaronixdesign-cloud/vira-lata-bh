@@ -215,7 +215,10 @@ export function LataCena() {
       (es) => {
         if (es.some((e) => e.isIntersecting)) {
           perto.disconnect();
-          void liga3D();
+          // A montagem do 3D espera a página ficar ociosa (hidratação, fontes, primeiras animações):
+          // assim ela não disputa a thread com os primeiros toques e teclas do visitante.
+          const ocioso = window.requestIdleCallback ?? ((fn: () => void, _opcoes?: IdleRequestOptions) => window.setTimeout(fn, 300));
+          ocioso(() => void liga3D(), { timeout: 2500 });
         }
       },
       { rootMargin: '150% 0px' },

@@ -2,8 +2,8 @@
 // Não tem laço próprio: quem manda é o scroll (LataCena chama aplica() só quando algo mudou).
 // Carregado sob demanda (import dinâmico) quando a seção da lata se aproxima.
 import {
-  AnimationClip, AnimationMixer, CanvasTexture, Color, DirectionalLight, LoopOnce, Matrix4, Mesh, MeshBasicMaterial,
-  NeutralToneMapping, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Scene, ShadowMaterial,
+  AnimationClip, AnimationMixer, CanvasTexture, Color, CubeUVReflectionMapping, DataTexture, DirectionalLight,
+  HalfFloatType, LinearFilter, LinearSRGBColorSpace, LoopOnce, Matrix4, Mesh, MeshBasicMaterial, NeutralToneMapping, RGBAFormat, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PMREMGenerator, Scene, ShadowMaterial,
   SRGBColorSpace, TextureLoader, Vector3, WebGLRenderer,
   type MeshStandardMaterial, type Object3D, type Texture,
 } from 'three';
@@ -11,6 +11,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { LIQUIDOS, type Estado } from './estados';
+import type { Ambiente } from './ambiente.worker';
 
 // Câmera dos posters (09_posters.py): 85 mm, sensor 36 mm horizontal, quadro 4:3, mirando o centro da lata.
 // Na vaga 4:3 a lata 3D cai exatamente onde está o poster, então o poster é o placeholder do 3D.
@@ -31,6 +32,60 @@ export type Quadro = {
 
 export type Palco = Awaited<ReturnType<typeof criaPalco>>;
 
+/**
+ * Devolve a vez ao navegador entre as etapas pesadas da montagem (WebGL, ambiente, GLB, shaders, texturas):
+ * cada etapa vira uma tarefa curta e um toque ou tecla no meio da carga responde na hora (INP).
+ */
+const cede = () =>
+  new Promise<void>((pronto) => {
+    const s = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+    if (s?.yield) s.yield().then(pronto);
+    else setTimeout(pronto, 0);
+  });
+
+// Decodificação do GLB (meshopt) fora da thread principal.
+MeshoptDecoder.useWorkers?.(1);
+
+const SIGMA_AMBIENTE = 0.04;
+
+/**
+ * Mapa de ambiente gerado num worker (ambiente.worker.ts) enquanto a página segue livre.
+ * Sem worker/OffscreenCanvas, ou se ele falhar, devolve null e o PMREM roda aqui mesmo, como antes.
+ */
+function ambienteNoWorker(): Promise<Texture | null> {
+  if (typeof Worker === 'undefined' || typeof OffscreenCanvas === 'undefined') return Promise.resolve(null);
+  return new Promise((pronto) => {
+    let w: Worker;
+    try {
+      w = new Worker(new URL('./ambiente.worker.ts', import.meta.url), { type: 'module' });
+    } catch {
+      pronto(null);
+      return;
+    }
+    const fim = (t: Texture | null) => {
+      clearTimeout(prazo);
+      w.terminate();
+      pronto(t);
+    };
+    const prazo = setTimeout(() => fim(null), 10000);
+    w.onerror = () => fim(null);
+    w.onmessage = (e: MessageEvent<Ambiente | { erro: string }>) => {
+      const r = e.data;
+      if (!r || 'erro' in r) return fim(null);
+      // mesmo formato do alvo do PMREM: meio-float RGBA linear, layout CubeUV, sem mipmaps
+      const t = new DataTexture(r.dados, r.largura, r.altura, RGBAFormat, HalfFloatType);
+      t.mapping = CubeUVReflectionMapping;
+      t.colorSpace = LinearSRGBColorSpace;
+      t.minFilter = LinearFilter;
+      t.magFilter = LinearFilter;
+      t.generateMipmaps = false;
+      t.needsUpdate = true;
+      fim(t);
+    };
+    w.postMessage({ sigma: SIGMA_AMBIENTE });
+  });
+}
+
 export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTMLCanvasElement; base: string; estados: Estado[]; toque: boolean }) {
   const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setClearColor(0x000000, 0);
@@ -44,11 +99,11 @@ export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTML
     renderer.shadowMap.type = PCFShadowMap;
   }
 
+  // o ambiente começa a ser gerado já, em paralelo com o download do GLB
+  const ambiente = ambienteNoWorker();
+  await cede();
   const scene = new Scene();
-  const pmrem = new PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.8;
-  pmrem.dispose();
 
   const camera = new PerspectiveCamera(30, 4 / 3, PERTO, 5);
 
@@ -92,7 +147,10 @@ export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTML
   loader.setMeshoptDecoder(MeshoptDecoder);
   const resp = await fetch(base + 'lata-sardinha.glb');
   if (!resp.ok) throw new Error(`GLB ${resp.status}`);
-  const gltf = await loader.parseAsync(await resp.arrayBuffer(), base);
+  const bytes = await resp.arrayBuffer();
+  await cede();
+  const gltf = await loader.parseAsync(bytes, base);
+  await cede();
   const lata = gltf.scene;
   scene.add(lata);
   lata.updateMatrixWorld(true);
@@ -170,9 +228,14 @@ export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTML
   const mapas: Texture[] = [mapaCasa];
   const carregaRotulos = async () => {
     const tl = new TextureLoader();
+    // Os downloads correm juntos; o envio de cada textura à GPU (síncrono) vai um por tarefa.
+    let fila = Promise.resolve();
     await Promise.all(
       estados.slice(1).map(async (e, k) => {
         const t = await tl.loadAsync(base + 'rotulos/' + e.rotulo);
+        const vez = fila.then(cede);
+        fila = vez;
+        await vez;
         t.flipY = false;
         t.colorSpace = SRGBColorSpace;
         t.offset.copy(mapaCasa.offset);
@@ -207,8 +270,20 @@ export async function criaPalco({ canvas, base, estados, toque }: { canvas: HTML
   // compila todos os materiais de uma vez (recheios ligados) para a primeira troca não engasgar
   for (const o of Object.values(conteudos)) o.visible = true;
   posiciona(0.5, -0.46);
+  const env = await ambiente;
+  if (env) {
+    renderer.initTexture(env);
+    scene.environment = env;
+  } else {
+    await cede();
+    const pmrem = new PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), SIGMA_AMBIENTE).texture;
+    pmrem.dispose();
+  }
+  await cede();
   await renderer.compileAsync(scene, camera);
   for (const o of Object.values(conteudos)) o.visible = false;
+  await cede();
 
   let conteudoAtual = -1;
   function aplica(e: Quadro) {
